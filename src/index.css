@@ -1,0 +1,752 @@
+/* Import main Zerodha landing page styles from root */
+@import '../style.css';
+
+/* Add Platform Specific Styles (Kite, Console, Coin, Sensibull, Varsity, Streak) */
+
+/* Layout grids for trading terminal */
+.kite-layout {
+  display: flex;
+  height: calc(100vh - 65px);
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.kite-sidebar {
+  width: 360px;
+  border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.kite-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Watchlist items */
+.watchlist-search {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.watchlist-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.watchlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #f9f9f9;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.watchlist-item:hover {
+  background-color: #f7fbff;
+}
+
+.watchlist-item.selected {
+  border-left: 3px solid #387ed1;
+  background-color: #f0f7ff;
+}
+
+.text-up {
+  color: #4caf50;
+  font-weight: 500;
+}
+
+.text-down {
+  color: #f44336;
+  font-weight: 500;
+}
+
+/* Action hover buttons in watchlist */
+.watchlist-actions {
+  display: none;
+  gap: 8px;
+}
+
+.watchlist-item:hover .watchlist-actions {
+  display: flex;
+}
+
+.watchlist-item:hover .watchlist-price {
+  display: none;
+}
+
+.btn-buy {
+  background-color: #4184f3 !important;
+  color: #fff !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  border-radius: 3px !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+.btn-buy:hover {
+  background-color: #2164d3 !important;
+}
+
+.btn-sell {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  border-radius: 3px !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+.btn-sell:hover {
+  background-color: #e64a19 !important;
+}
+
+/* Order Pane Styles */
+.order-window {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: #fafafa;
+  margin-top: 15px;
+}
+
+.order-tabs {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.order-tab {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+}
+
+.order-tab.active {
+  border-bottom-color: #387ed1;
+  color: #387ed1;
+}
+
+/* Console Holdings & Cash forms */
+.console-card {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  margin-bottom: 20px;
+}
+
+/* Coin mutual fund cards */
+.mf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.mf-card {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 20px;
+  background: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.mf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* Sensibull Option Chain */
+.options-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.options-table th, .options-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+
+.strike-col {
+  background-color: #f7f9fa;
+  font-weight: 600;
+}
+
+.call-side {
+  background-color: #fdfefe;
+}
+
+.put-side {
+  background-color: #fcfefe;
+}
+
+/* Quiz styling in Varsity */
+.quiz-box {
+  background-color: #f4f8ff;
+  border: 1px solid #d2e4ff;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+/* Certificate Generator Frame */
+.certificate-frame {
+  border: 8px double #d2a13b;
+  padding: 30px;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
+  background-color: #fffaf0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  font-family: 'Georgia', serif;
+}
+
+.cert-title {
+  font-size: 28px;
+  color: #5d4037;
+  margin-bottom: 10px;
+}
+
+.cert-recipient {
+  font-size: 24px;
+  font-weight: bold;
+  border-bottom: 1px solid #5d4037;
+  display: inline-block;
+  padding: 5px 20px;
+  margin: 15px 0;
+  color: #3e2723;
+}
+
+/* API tests explorer */
+.api-runner {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  padding: 15px;
+  border-radius: 4px;
+  font-family: monospace;
+  overflow-x: auto;
+  margin-top: 10px;
+  max-height: 200px;
+}
+
+/* KYC camera simulator */
+.camera-mock {
+  width: 320px;
+  height: 240px;
+  background-color: #000;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.camera-mock .scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #00ff00;
+  box-shadow: 0 0 8px #00ff00;
+  animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/* Tab contents for Kite charts & positions */
+.tab-content-container {
+  margin-top: 20px;
+}
+
+/* Margin warning nudge alert box */
+.nudge-warning {
+  border: 1px solid #ffe0b2;
+  background-color: #fff3e0;
+  color: #e65100;
+  padding: 12px 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Nav Active Route Highlight */
+.navbar-links a.active-link {
+  color: #387ed1 !important;
+  font-weight: 500;
+}
+
+/* Kite high-fidelity redesign classes */
+@keyframes flashGreen {
+  0% { background-color: rgba(76, 175, 80, 0.25); }
+  100% { background-color: transparent; }
+}
+
+@keyframes flashRed {
+  0% { background-color: rgba(244, 67, 54, 0.25); }
+  100% { background-color: transparent; }
+}
+
+.flash-up {
+  animation: flashGreen 0.6s ease-out;
+}
+
+.flash-down {
+  animation: flashRed 0.6s ease-out;
+}
+
+/* Watchlist hover action buttons */
+.watchlist-action-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background-color 0.15s;
+}
+
+.watchlist-action-btn.buy {
+  background-color: #4184f3;
+  color: #fff;
+}
+.watchlist-action-btn.buy:hover {
+  background-color: #1a62d6;
+}
+
+.watchlist-action-btn.sell {
+  background-color: #ff5722;
+  color: #fff;
+}
+.watchlist-action-btn.sell:hover {
+  background-color: #e64a19;
+}
+
+.watchlist-action-btn.icon {
+  background-color: #f0f0f0;
+  color: #555;
+  border: 1px solid #e0e0e0;
+}
+.watchlist-action-btn.icon:hover {
+  background-color: #e4e4e4;
+  color: #333;
+}
+
+/* Watchlist Market Depth style */
+.watchlist-depth-container {
+  background-color: #fafafa;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.watchlist-depth-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.watchlist-depth-table th {
+  color: #999;
+  font-weight: 400;
+  text-align: right;
+  padding: 2px 4px;
+  font-size: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.watchlist-depth-table th:first-child,
+.watchlist-depth-table td:first-child {
+  text-align: left;
+}
+
+.watchlist-depth-table td {
+  padding: 3px 4px;
+  font-family: "Inter", sans-serif;
+  text-align: right;
+}
+
+.depth-bid {
+  color: #4184f3;
+}
+
+.depth-ask {
+  color: #ff5722;
+}
+
+/* TradingView Chart Styles */
+.tv-chart-container {
+  display: flex;
+  flex: 1;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 380px;
+}
+
+.tv-drawing-toolbar {
+  width: 45px;
+  border-right: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 12px;
+}
+
+.tv-drawing-tool {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tv-drawing-tool:hover {
+  background-color: #f0f0f0;
+  color: #ff5722;
+}
+
+.tv-drawing-tool.active {
+  background-color: #ffe0b2;
+  color: #e65100;
+  border: 1px solid #ffd180;
+}
+
+.tv-chart-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.tv-chart-toolbar {
+  height: 38px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+.tv-toolbar-btn {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.15s;
+}
+
+.tv-toolbar-btn:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.tv-toolbar-btn.active {
+  background-color: #e0f2f1;
+  color: #00796b;
+  font-weight: 600;
+}
+
+/* Zerodha Standard Table Styling */
+.kite-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.kite-table th {
+  color: #999;
+  font-weight: 400;
+  font-size: 12px;
+  text-align: right;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  background-color: #fafafa;
+}
+
+.kite-table th:first-child,
+.kite-table td:first-child {
+  text-align: left;
+}
+
+.kite-table td {
+  padding: 12px 15px;
+  font-size: 13px;
+  border-bottom: 1px solid #f5f5f5;
+  text-align: right;
+}
+
+.kite-table tbody tr:hover {
+  background-color: #fafbfd;
+}
+
+/* Add/Withdraw funds inline dialog overlay */
+.funds-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.funds-modal-card {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 450px;
+  padding: 25px;
+  position: relative;
+}
+
+/* 2FA Login Form styling */
+.login-2fa-input-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.login-2fa-input {
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-2fa-input:focus {
+  border-color: #ff5722;
+  box-shadow: 0 0 4px rgba(255, 87, 34, 0.25);
+}
+
+.login-back-link {
+  color: #888;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.login-back-link:hover {
+  color: #ff5722;
+}
+
+/* High-density layout spacing updates */
+.kite-table td, .kite-table th {
+  padding: 8px 12px !important;
+}
+
+.watchlist-item {
+  height: 48px !important;
+  box-sizing: border-box;
+}
+
+.tv-chart-container {
+  height: 420px !important;
+}
+
+/* ========================================================
+   CRITICAL GLOBAL UI FIXES & POLISH
+   ======================================================== */
+
+/* 1. Reset root body padding-top so Kite and Login fit 100vh perfectly */
+body {
+  padding-top: 0 !important;
+  margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Marketing content only receives the navbar offset */
+.marketing-content {
+  padding-top: 65px;
+}
+
+/* 2. Prevent style.css input margin-bottom from bloating widgets & toolbars */
+.kite-sidebar input,
+.kite-main input,
+.order-window input,
+.tv-chart-container input,
+.tv-chart-toolbar select,
+.watchlist-search input,
+.funds-modal-card input,
+.console-card input:not([type=submit]),
+.console-card select,
+.console-card textarea {
+  margin-bottom: 0 !important;
+  line-height: normal !important;
+}
+
+/* 3. Protect all custom buttons from style.css generic button:hover { background: #222 !important } */
+.tv-toolbar-btn {
+  background: none !important;
+  border: 1px solid transparent !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  color: #555 !important;
+  cursor: pointer !important;
+  border-radius: 3px !important;
+  line-height: normal !important;
+  height: auto !important;
+  transition: all 0.15s !important;
+}
+
+.tv-toolbar-btn:hover {
+  background-color: #f0f0f0 !important;
+  color: #222 !important;
+}
+
+.tv-toolbar-btn.active {
+  background-color: #e0f2f1 !important;
+  color: #00796b !important;
+  font-weight: 600 !important;
+  border-color: #b2dfdb !important;
+}
+
+.watchlist-action-btn {
+  padding: 0 !important;
+  border-radius: 3px !important;
+}
+
+.watchlist-action-btn.buy {
+  background-color: #4184f3 !important;
+  color: #fff !important;
+}
+.watchlist-action-btn.buy:hover {
+  background-color: #1a62d6 !important;
+  color: #fff !important;
+}
+
+.watchlist-action-btn.sell {
+  background-color: #ff5722 !important;
+  color: #fff !important;
+}
+.watchlist-action-btn.sell:hover {
+  background-color: #e64a19 !important;
+  color: #fff !important;
+}
+
+.watchlist-action-btn.icon {
+  background-color: #f0f0f0 !important;
+  color: #555 !important;
+  border: 1px solid #e0e0e0 !important;
+}
+.watchlist-action-btn.icon:hover {
+  background-color: #e4e4e4 !important;
+  color: #222 !important;
+}
+
+.order-modal-close-btn {
+  background: none !important;
+  border: none !important;
+  color: #fff !important;
+  font-size: 22px !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  opacity: 0.85;
+}
+.order-modal-close-btn:hover {
+  opacity: 1;
+  background: none !important;
+  color: #fff !important;
+}
+
+/* 4. Fix console-card padding so section:first-child doesn't add 100px padding */
+section.console-card, div.console-card {
+  padding: 25px !important;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+/* 5. Custom subtle scrollbars for trading desk */
+.kite-sidebar::-webkit-scrollbar,
+.kite-main::-webkit-scrollbar,
+.watchlist-list::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.kite-sidebar::-webkit-scrollbar-track,
+.kite-main::-webkit-scrollbar-track,
+.watchlist-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.kite-sidebar::-webkit-scrollbar-thumb,
+.kite-main::-webkit-scrollbar-thumb,
+.watchlist-list::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 3px;
+}
+.kite-sidebar::-webkit-scrollbar-thumb:hover,
+.kite-main::-webkit-scrollbar-thumb:hover,
+.watchlist-list::-webkit-scrollbar-thumb:hover {
+  background: #bdbdbd;
+}
+
+/* 6. Fix radio and checkbox margins */
+input[type=radio], input[type=checkbox] {
+  margin-bottom: 0 !important;
+  cursor: pointer;
+}
+
+
+
