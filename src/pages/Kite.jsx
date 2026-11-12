@@ -1,33 +1,35 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { AppContext } from '../context/AppContext';
+import { AppContext, basePrices as defaultBasePrices, stockStats as defaultStockStats } from '../context/AppContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { 
   Search, ChevronDown, User, LogOut, ArrowUpRight, ArrowDownRight, 
   TrendingUp, HelpCircle, Settings, Trash, Eye, BarChart2, Bell, 
-  RefreshCw, X, Play, Shield, Globe, Award, Sparkles, BookOpen 
+  RefreshCw, X, Play, Shield, Globe, Award, Sparkles, BookOpen,
+  CheckCircle2, Download, Layers, Activity
 } from 'lucide-react';
 
 // Generates high-fidelity mock historical stock data with OHLC (Open High Low Close)
-const generateMockChartData = (basePrice, timeframe = '5m', count = 30) => {
+const generateMockChartData = (currentPrice, timeframe = '5m', count = 32) => {
   const data = [];
-  let price = basePrice * 0.98;
+  let price = currentPrice * 0.988;
   const now = new Date();
   
-  let multiplier = 1;
-  if (timeframe === '1m') multiplier = 0.2;
-  else if (timeframe === '15m') multiplier = 2;
-  else if (timeframe === '1h') multiplier = 6;
-  else if (timeframe === '1d') multiplier = 24;
+  let multiplier = 5;
+  if (timeframe === '1m') multiplier = 1;
+  else if (timeframe === '5m') multiplier = 5;
+  else if (timeframe === '15m') multiplier = 15;
+  else if (timeframe === '1h') multiplier = 60;
+  else if (timeframe === '1d') multiplier = 1440;
 
-  for (let i = count; i >= 0; i--) {
-    const time = new Date(now.getTime() - i * 5 * 60 * 1000 * multiplier);
-    const change = (Math.random() - 0.49) * (basePrice * 0.015);
+  for (let i = count; i >= 1; i--) {
+    const time = new Date(now.getTime() - i * multiplier * 60 * 1000);
+    const change = (Math.random() - 0.48) * (currentPrice * 0.005);
     const open = parseFloat(price.toFixed(2));
     const close = parseFloat((price + change).toFixed(2));
-    const high = parseFloat((Math.max(open, close) + Math.random() * (basePrice * 0.004)).toFixed(2));
-    const low = parseFloat((Math.min(open, close) - Math.random() * (basePrice * 0.004)).toFixed(2));
-    const volume = Math.floor(1000 + Math.random() * 20000);
+    const high = parseFloat((Math.max(open, close) + Math.random() * (currentPrice * 0.0018)).toFixed(2));
+    const low = parseFloat((Math.min(open, close) - Math.random() * (currentPrice * 0.0018)).toFixed(2));
+    const volume = Math.floor(2500 + Math.random() * 20000);
     price = close;
     
     data.push({
@@ -41,6 +43,21 @@ const generateMockChartData = (basePrice, timeframe = '5m', count = 30) => {
       volume
     });
   }
+
+  // Final bar ends at exact current market price
+  const lastOpen = parseFloat(price.toFixed(2));
+  const lastClose = parseFloat(currentPrice.toFixed(2));
+  data.push({
+    date: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    dateLabel: now.toLocaleDateString([], { month: 'short', day: 'numeric' }),
+    open: lastOpen,
+    high: parseFloat(Math.max(lastOpen, lastClose, lastClose * 1.0008).toFixed(2)),
+    low: parseFloat(Math.min(lastOpen, lastClose, lastClose * 0.9992).toFixed(2)),
+    close: lastClose,
+    price: lastClose,
+    volume: Math.floor(4000 + Math.random() * 25000)
+  });
+
   return data;
 };
 
@@ -70,8 +87,11 @@ const playSuccessSound = () => {
 
 export default function Kite() {
   const { 
-    margin, holdings, orders, positions, executeOrder, stockPrices, user, logout, depositCash, withdrawCash
+    margin, holdings, orders, positions, executeOrder, stockPrices, marketStats: ctxMarketStats, basePrices: ctxBasePrices, user, logout, depositCash, withdrawCash
   } = useContext(AppContext);
+
+  const basePrices = ctxBasePrices || defaultBasePrices;
+  const marketStats = ctxMarketStats || defaultStockStats;
 
   const navigate = useNavigate();
   
@@ -186,8 +206,8 @@ export default function Kite() {
     e.preventDefault();
     if (orderQty <= 0) return alert('Quantity must be greater than 0');
     
-    const targetPrice = orderPriceType === 'MARKET' ? stockPrices[selectedStock] : orderLimitPrice;
-    const success = executeOrder(selectedStock, orderModalType, orderQty, orderPriceType, targetPrice);
+    const targetPrice = orderPriceType === 'MARKET' ? (stockPrices[selectedStock] || 100) : orderLimitPrice;
+    const success = executeOrder(selectedStock, orderModalType, orderQty, orderPriceType, targetPrice, orderProduct);
     if (success) {
       playSuccessSound();
       setOrderModalOpen(false);
@@ -200,26 +220,14 @@ export default function Kite() {
     setSelectedStock(sym);
     setOrderModalType(type);
     const matchingHold = holdings.find(h => h.symbol === sym);
-    setOrderQty(matchingHold ? matchingHold.qty : 10);
+    setOrderQty(matchingHold ? matchingHold.qty : 89);
+    setOrderProduct('CNC');
     setOrderModalOpen(true);
   };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  // Dynamic market baseline prices for calculating live day's change
-  const basePrices = {
-    LTIM: 3784.50,
-    RELIANCE: 2430.00,
-    TCS: 3214.20,
-    HDFCBANK: 1536.30,
-    INFY: 1428.90,
-    ITC: 429.70,
-    SBIN: 804.50,
-    NIFTY50: 23402.10,
-    SENSEX: 76908.40
   };
 
   const getStockPercentChange = (symbol) => {
@@ -242,66 +250,139 @@ export default function Kite() {
   const totalHoldingsValue = holdings.reduce((sum, h) => sum + (h.currentPrice * h.qty), 0);
   const totalCostValue = holdings.reduce((sum, h) => sum + (h.buyPrice * h.qty), 0);
   const totalPnl = totalHoldingsValue - totalCostValue;
-  const pnlPercent = (totalPnl / totalCostValue) * 100;
+  const pnlPercent = totalCostValue > 0 ? (totalPnl / totalCostValue) * 100 : 0;
+
+  // Day's P&L calculation
+  const totalDayPnl = holdings.reduce((sum, h) => {
+    const base = basePrices[h.symbol] || h.buyPrice;
+    return sum + ((h.currentPrice - base) * h.qty);
+  }, 0);
+  const dayPnlPercent = totalCostValue > 0 ? (totalDayPnl / totalCostValue) * 100 : 0;
 
   // Filter watchlists
   const filteredWatchlist = watchlists.filter(sym => 
     sym.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Inline market depth drawer
+  // Full High-Fidelity Zerodha Market Depth Drawer
   const renderInlineMarketDepth = (sym) => {
     const ltp = stockPrices[sym] || 1000;
+    const stat = marketStats[sym] || { open: ltp, high: ltp * 1.01, low: ltp * 0.99, volume: 150000, high52: ltp * 1.3, low52: ltp * 0.7 };
+    const prevClose = basePrices[sym] || ltp;
+    
+    // Dynamic spreads based on current tick
     const bids = [
-      { price: ltp - 0.25, qty: 154, orders: 2 },
-      { price: ltp - 0.60, qty: 542, orders: 5 },
-      { price: ltp - 0.85, qty: 231, orders: 1 },
-      { price: ltp - 1.10, qty: 890, orders: 9 },
-      { price: ltp - 1.45, qty: 1205, orders: 14 }
+      { price: ltp - 0.05, qty: 450, orders: 4 },
+      { price: ltp - 0.15, qty: 890, orders: 9 },
+      { price: ltp - 0.30, qty: 1420, orders: 15 },
+      { price: ltp - 0.55, qty: 2600, orders: 28 },
+      { price: ltp - 0.85, qty: 3850, orders: 42 }
     ];
     const asks = [
-      { price: ltp + 0.15, qty: 320, orders: 3 },
-      { price: ltp + 0.40, qty: 215, orders: 2 },
-      { price: ltp + 0.70, qty: 640, orders: 6 },
-      { price: ltp + 0.95, qty: 110, orders: 1 },
-      { price: ltp + 1.30, qty: 1450, orders: 8 }
+      { price: ltp + 0.05, qty: 380, orders: 3 },
+      { price: ltp + 0.20, qty: 740, orders: 8 },
+      { price: ltp + 0.35, qty: 1190, orders: 12 },
+      { price: ltp + 0.60, qty: 2150, orders: 21 },
+      { price: ltp + 0.90, qty: 3120, orders: 35 }
     ];
 
     const totalBids = bids.reduce((acc, curr) => acc + curr.qty, 0);
     const totalAsks = asks.reduce((acc, curr) => acc + curr.qty, 0);
+    const bidPct = Math.round((totalBids / (totalBids + totalAsks)) * 100);
+    const askPct = 100 - bidPct;
+
+    const lowerCircuit = (prevClose * 0.90).toFixed(2);
+    const upperCircuit = (prevClose * 1.10).toFixed(2);
+    const avgPrice = ((stat.high + stat.low + ltp) / 3).toFixed(2);
 
     return (
-      <div className="watchlist-depth-container" onClick={e => e.stopPropagation()}>
-        <table className="watchlist-depth-table">
+      <div className="watchlist-depth-container" onClick={e => e.stopPropagation()} style={{ background: '#fafafa', borderTop: '1px solid #eee', borderBottom: '1px solid #eee', padding: '10px 14px' }}>
+        {/* Depth Header with Market Orders */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '600', color: '#555', marginBottom: '6px' }}>
+          <span>Market Depth (5 Levels)</span>
+          <span style={{ fontSize: '10px', color: '#888' }}>Live Order Book</span>
+        </div>
+
+        <table className="watchlist-depth-table" style={{ width: '100%', fontSize: '11px' }}>
           <thead>
-            <tr>
-              <th>Bid Price</th>
-              <th>Orders</th>
-              <th>Qty</th>
-              <th>Ask Price</th>
-              <th>Orders</th>
-              <th>Qty</th>
+            <tr style={{ color: '#888', borderBottom: '1px solid #e8e8e8' }}>
+              <th style={{ textAlign: 'left', padding: '2px 0' }}>Bid Price</th>
+              <th style={{ textAlign: 'center' }}>Orders</th>
+              <th style={{ textAlign: 'right' }}>Qty</th>
+              <th style={{ textAlign: 'left', paddingLeft: '8px' }}>Ask Price</th>
+              <th style={{ textAlign: 'center' }}>Orders</th>
+              <th style={{ textAlign: 'right', padding: '2px 0' }}>Qty</th>
             </tr>
           </thead>
           <tbody>
             {Array.from({ length: 5 }).map((_, idx) => (
               <tr key={idx} style={{ fontSize: '10.5px' }}>
-                <td className="depth-bid">₹{bids[idx].price.toFixed(2)}</td>
-                <td>{bids[idx].orders}</td>
-                <td>{bids[idx].qty}</td>
-                <td className="depth-ask">₹{asks[idx].price.toFixed(2)}</td>
-                <td>{asks[idx].orders}</td>
-                <td>{asks[idx].qty}</td>
+                <td className="depth-bid" style={{ color: '#387ed1', fontWeight: '500' }}>₹{bids[idx].price.toFixed(2)}</td>
+                <td style={{ textAlign: 'center', color: '#777' }}>{bids[idx].orders}</td>
+                <td style={{ textAlign: 'right', color: '#444' }}>{bids[idx].qty}</td>
+                <td className="depth-ask" style={{ color: '#ff5722', fontWeight: '500', paddingLeft: '8px' }}>₹{asks[idx].price.toFixed(2)}</td>
+                <td style={{ textAlign: 'center', color: '#777' }}>{asks[idx].orders}</td>
+                <td style={{ textAlign: 'right', color: '#444' }}>{asks[idx].qty}</td>
               </tr>
             ))}
-            <tr style={{ fontWeight: '600', borderTop: '1px solid #ddd' }}>
-              <td colSpan={2}>Total</td>
-              <td>{totalBids}</td>
-              <td colSpan={2}>Total</td>
-              <td>{totalAsks}</td>
+            <tr style={{ fontWeight: '600', borderTop: '1px solid #e0e0e0', fontSize: '11px' }}>
+              <td colSpan={2} style={{ color: '#387ed1' }}>Total Bids</td>
+              <td style={{ textAlign: 'right', color: '#387ed1' }}>{totalBids.toLocaleString()}</td>
+              <td colSpan={2} style={{ paddingLeft: '8px', color: '#ff5722' }}>Total Asks</td>
+              <td style={{ textAlign: 'right', color: '#ff5722' }}>{totalAsks.toLocaleString()}</td>
             </tr>
           </tbody>
         </table>
+
+        {/* Live Depth Ratio Split Bar */}
+        <div style={{ marginTop: '8px', height: '4px', width: '100%', background: '#eee', borderRadius: '2px', overflow: 'hidden', display: 'flex' }}>
+          <div style={{ width: `${bidPct}%`, background: '#387ed1', height: '100%' }} title={`Buy Qty: ${bidPct}%`} />
+          <div style={{ width: `${askPct}%`, background: '#ff5722', height: '100%' }} title={`Sell Qty: ${askPct}%`} />
+        </div>
+
+        {/* Detailed Instrument Statistics Grid */}
+        <div style={{ marginTop: '10px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px', fontSize: '10.5px', background: '#fff', padding: '8px 10px', borderRadius: '3px', border: '1px solid #eee' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Open:</span>
+            <strong>₹{stat.open.toFixed(2)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>High:</span>
+            <strong style={{ color: '#4caf50' }}>₹{stat.high.toFixed(2)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Low:</span>
+            <strong style={{ color: '#f44336' }}>₹{stat.low.toFixed(2)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Prev. Close:</span>
+            <strong>₹{prevClose.toFixed(2)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Volume:</span>
+            <span>{stat.volume.toLocaleString()}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Avg Price:</span>
+            <span>₹{avgPrice}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>52W High:</span>
+            <span>₹{stat.high52.toFixed(2)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>52W Low:</span>
+            <span>₹{stat.low52.toFixed(2)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Lower Circuit:</span>
+            <span style={{ color: '#f44336' }}>₹{lowerCircuit}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: '#888' }}>Upper Circuit:</span>
+            <span style={{ color: '#4caf50' }}>₹{upperCircuit}</span>
+          </div>
+        </div>
       </div>
     );
   };
@@ -326,6 +407,118 @@ export default function Kite() {
       setWithdrawOpen(false);
       alert(`Withdrawal request of ₹${fundInput.toLocaleString()} has been queued. Funds will clear to your HDFC linked account.`);
     }
+  };
+
+  // High-fidelity Japanese Candlestick Chart SVG renderer
+  const renderCandleSvgChart = () => {
+    if (!chartData || chartData.length === 0) return null;
+    const padding = { top: 20, right: 65, bottom: 25, left: 15 };
+    const width = 800;
+    const height = 300;
+
+    const minPrice = Math.min(...chartData.map(d => d.low)) * 0.999;
+    const maxPrice = Math.max(...chartData.map(d => d.high)) * 1.001;
+    const priceRange = maxPrice - minPrice || 1;
+
+    const innerWidth = width - padding.left - padding.right;
+    const innerHeight = height - padding.top - padding.bottom;
+
+    const getY = (val) => padding.top + innerHeight - ((val - minPrice) / priceRange) * innerHeight;
+    const barWidth = Math.max(5, Math.min(16, (innerWidth / chartData.length) * 0.65));
+    const step = innerWidth / chartData.length;
+
+    const priceLevels = [0, 0.25, 0.5, 0.75, 1].map(pct => minPrice + pct * priceRange);
+
+    let emaPoints = [];
+    if (chartIndicator === 'EMA') {
+      chartData.forEach((d, idx) => {
+        if (idx >= 3) {
+          const slice = chartData.slice(Math.max(0, idx - 5), idx + 1);
+          const emaVal = slice.reduce((s, p) => s + p.price, 0) / slice.length;
+          const x = padding.left + (idx + 0.5) * step;
+          const y = getY(emaVal);
+          emaPoints.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+        }
+      });
+    }
+
+    const last = chartData[chartData.length - 1];
+    const lastY = last ? getY(last.close) : 0;
+    const lastColor = last && last.close >= last.open ? '#26a69a' : '#ef5350';
+
+    return (
+      <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+        {/* Horizontal Grid lines & Price Labels */}
+        {priceLevels.map((lvl, idx) => {
+          const y = getY(lvl);
+          return (
+            <g key={idx}>
+              <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="#f0f0f0" strokeDasharray="3 3" />
+              <text x={width - padding.right + 6} y={y + 3.5} fill="#888" fontSize="10" fontFamily="Inter, sans-serif">
+                ₹{lvl.toFixed(2)}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* EMA Line overlay */}
+        {chartIndicator === 'EMA' && emaPoints.length > 1 && (
+          <polyline
+            fill="none"
+            stroke="#ff9800"
+            strokeWidth="1.5"
+            points={emaPoints.join(' ')}
+          />
+        )}
+
+        {/* Real Candlestick Bars */}
+        {chartData.map((d, idx) => {
+          const x = padding.left + (idx + 0.5) * step;
+          const isUp = d.close >= d.open;
+          const color = isUp ? '#26a69a' : '#ef5350';
+          const yHigh = getY(d.high);
+          const yLow = getY(d.low);
+          const yOpen = getY(d.open);
+          const yClose = getY(d.close);
+          const topBody = Math.min(yOpen, yClose);
+          const bodyHeight = Math.max(2, Math.abs(yClose - yOpen));
+
+          return (
+            <g key={idx} style={{ cursor: 'crosshair' }}>
+              <title>{`${d.date}\nOpen: ₹${d.open.toFixed(2)}\nHigh: ₹${d.high.toFixed(2)}\nLow: ₹${d.low.toFixed(2)}\nClose: ₹${d.close.toFixed(2)}\nVol: ${d.volume.toLocaleString()}`}</title>
+              {/* Vertical Wick from High to Low */}
+              <line x1={x} y1={yHigh} x2={x} y2={yLow} stroke={color} strokeWidth="1.2" />
+              {/* Solid Candle Body */}
+              <rect
+                x={x - barWidth / 2}
+                y={topBody}
+                width={barWidth}
+                height={bodyHeight}
+                fill={color}
+                rx={1}
+              />
+              {/* Time axis label */}
+              {idx % 5 === 0 && (
+                <text x={x} y={height - 6} fill="#888" fontSize="9" textAnchor="middle" fontFamily="Inter, sans-serif">
+                  {d.date}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+        {/* Current Live Price Dashed Indicator Line */}
+        {last && (
+          <g>
+            <line x1={padding.left} y1={lastY} x2={width - padding.right} y2={lastY} stroke={lastColor} strokeDasharray="3 3" strokeWidth="1.2" />
+            <rect x={width - padding.right + 2} y={lastY - 9} width="62" height="18" fill={lastColor} rx="2" />
+            <text x={width - padding.right + 5} y={lastY + 3.5} fill="#fff" fontSize="10" fontWeight="bold" fontFamily="Inter, sans-serif">
+              ₹{last.close.toFixed(2)}
+            </text>
+          </g>
+        )}
+      </svg>
+    );
   };
 
   return (
@@ -353,17 +546,17 @@ export default function Kite() {
           <div style={{ display: 'flex', gap: '15px', fontSize: '12px', borderLeft: '1px solid #eee', paddingLeft: '20px' }}>
             <div style={{ color: '#555' }}>
               NIFTY 50 <span className={flashStates.NIFTY50 === 'up' ? 'flash-up text-up' : flashStates.NIFTY50 === 'down' ? 'flash-down text-down' : 'text-up'} style={{ fontWeight: '600', marginLeft: '3px' }}>
-                {(stockPrices.NIFTY50 || 23500).toFixed(2)}
+                {(stockPrices.NIFTY50 || 25248.50).toFixed(2)}
               </span>
-              <span className={(stockPrices.NIFTY50 || 23500) >= 23402.10 ? 'text-up' : 'text-down'} style={{ marginLeft: '4px', fontSize: '10px' }}>
+              <span className={getStockPercentChange('NIFTY50').startsWith('+') ? 'text-up' : 'text-down'} style={{ marginLeft: '4px', fontSize: '10px' }}>
                 ({getStockPercentChange('NIFTY50')})
               </span>
             </div>
             <div style={{ color: '#555' }}>
               SENSEX <span className={flashStates.SENSEX === 'up' ? 'flash-up text-up' : flashStates.SENSEX === 'down' ? 'flash-down text-down' : 'text-up'} style={{ fontWeight: '600', marginLeft: '3px' }}>
-                {(stockPrices.SENSEX || 77200).toFixed(2)}
+                {(stockPrices.SENSEX || 81960.00).toFixed(2)}
               </span>
-              <span className={(stockPrices.SENSEX || 77200) >= 76908.40 ? 'text-up' : 'text-down'} style={{ marginLeft: '4px', fontSize: '10px' }}>
+              <span className={getStockPercentChange('SENSEX').startsWith('+') ? 'text-up' : 'text-down'} style={{ marginLeft: '4px', fontSize: '10px' }}>
                 ({getStockPercentChange('SENSEX')})
               </span>
             </div>
@@ -374,9 +567,9 @@ export default function Kite() {
         <nav style={{ display: 'flex', gap: '30px', fontSize: '13px', height: '100%' }}>
           {[
             { id: 'DASHBOARD', label: 'Dashboard' },
-            { id: 'ORDERS', label: 'Orders' },
-            { id: 'HOLDINGS', label: 'Holdings' },
-            { id: 'POSITIONS', label: 'Positions' },
+            { id: 'ORDERS', label: `Orders (${orders.length})` },
+            { id: 'HOLDINGS', label: `Holdings (${holdings.length})` },
+            { id: 'POSITIONS', label: `Positions (${positions.length})` },
             { id: 'FUNDS', label: 'Funds' },
             { id: 'APPS', label: 'Apps' }
           ].map(tab => (
@@ -617,9 +810,14 @@ export default function Kite() {
               </div>
 
               {/* Portfolio Snapshot brief with Circular Share Count Widget */}
-              <div className="console-card" style={{ padding: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: '600', color: '#333' }}>Portfolio Summary</h3>
+              <div className="console-card" style={{ padding: '22px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h3 style={{ margin: 0, fontSize: '15px', fontWeight: '600', color: '#333' }}>Portfolio Summary</h3>
+                    <span style={{ fontSize: '11px', background: '#e3f2fd', color: '#1976d2', padding: '1px 7px', borderRadius: '3px', fontWeight: '600' }}>
+                      Real-time Feed Active
+                    </span>
+                  </div>
                   <Link to="/console" style={{ fontSize: '12px', color: '#387ed1', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     View Console Backoffice <ArrowUpRight size={12} />
                   </Link>
@@ -627,63 +825,72 @@ export default function Kite() {
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
                   {/* Financial Metrics */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '35px', flexWrap: 'wrap' }}>
                     <div>
-                      <span style={{ fontSize: '12px', color: '#888' }}>Holdings Value</span>
-                      <h3 style={{ margin: '4px 0 0 0', fontSize: '20px', color: '#387ed1', fontWeight: '600' }}>₹{totalHoldingsValue.toLocaleString([], { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
-                      <span style={{ fontSize: '11px', color: '#999' }}>Live Market Value</span>
+                      <span style={{ fontSize: '11.5px', color: '#888' }}>Holdings Value</span>
+                      <h3 style={{ margin: '4px 0 0 0', fontSize: '22px', color: '#387ed1', fontWeight: '700' }}>
+                        ₹{totalHoldingsValue.toLocaleString([], { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </h3>
+                      <span style={{ fontSize: '11px', color: '#999' }}>Live Demat Valuation</span>
                     </div>
                     <div>
-                      <span style={{ fontSize: '12px', color: '#888' }}>Total Returns</span>
-                      <h3 className={totalPnl >= 0 ? 'text-up' : 'text-down'} style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: '600' }}>
+                      <span style={{ fontSize: '11.5px', color: '#888' }}>Total Returns</span>
+                      <h3 className={totalPnl >= 0 ? 'text-up' : 'text-down'} style={{ margin: '4px 0 0 0', fontSize: '22px', fontWeight: '700' }}>
                         ₹{totalPnl.toLocaleString([], { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({pnlPercent.toFixed(2)}%)
                       </h3>
                       <span style={{ fontSize: '11px', color: '#999' }}>Investment: ₹{totalCostValue.toLocaleString([], { minimumFractionDigits: 2 })}</span>
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '11.5px', color: '#888' }}>Today's Return</span>
+                      <h3 className={totalDayPnl >= 0 ? 'text-up' : 'text-down'} style={{ margin: '4px 0 0 0', fontSize: '18px', fontWeight: '600' }}>
+                        {totalDayPnl >= 0 ? '+' : ''}₹{totalDayPnl.toLocaleString([], { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({dayPnlPercent.toFixed(2)}%)
+                      </h3>
+                      <span style={{ fontSize: '11px', color: '#999' }}>Day's P&amp;L</span>
                     </div>
                   </div>
 
                   {/* Circular Share Count Donut Widget */}
                   <div style={{ 
-                    display: 'flex', alignItems: 'center', gap: '16px', 
-                    background: '#f8fafd', padding: '12px 20px', borderRadius: '8px', border: '1px solid #e3eefc'
+                    display: 'flex', alignItems: 'center', gap: '18px', 
+                    background: '#f8fafd', padding: '14px 22px', borderRadius: '8px', border: '1px solid #e3eefc'
                   }}>
                     {/* Donut Circle */}
-                    <div style={{ position: 'relative', width: '74px', height: '74px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <svg width="74" height="74" viewBox="0 0 74 74">
+                    <div style={{ position: 'relative', width: '82px', height: '82px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="82" height="82" viewBox="0 0 82 82">
                         {/* Track circle */}
-                        <circle cx="37" cy="37" r="30" fill="none" stroke="#e8ecf2" strokeWidth="7" />
+                        <circle cx="41" cy="41" r="33" fill="none" stroke="#e8edf5" strokeWidth="8" />
                         {/* Progress ring 100% */}
                         <circle 
-                          cx="37" cy="37" r="30" fill="none" 
-                          stroke="#387ed1" strokeWidth="7" 
-                          strokeDasharray="188.5" strokeDashoffset="0"
+                          cx="41" cy="41" r="33" fill="none" 
+                          stroke="#387ed1" strokeWidth="8" 
+                          strokeDasharray="207.3" strokeDashoffset="0"
                           strokeLinecap="round"
-                          transform="rotate(-90 37 37)"
+                          transform="rotate(-90 41 41)"
                         />
                       </svg>
                       {/* Centered Share Count */}
                       <div style={{ position: 'absolute', textAlign: 'center', pointerEvents: 'none' }}>
-                        <div style={{ fontSize: '17px', fontWeight: '800', color: '#387ed1', lineHeight: '1' }}>
+                        <div style={{ fontSize: '20px', fontWeight: '800', color: '#387ed1', lineHeight: '1' }}>
                           {holdings.reduce((sum, h) => sum + h.qty, 0)}
                         </div>
-                        <span style={{ fontSize: '8px', fontWeight: '700', color: '#777', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        <span style={{ fontSize: '8px', fontWeight: '700', color: '#777', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
                           Shares
                         </span>
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ fontSize: '13px', fontWeight: '700', color: '#222', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ fontSize: '13.5px', fontWeight: '700', color: '#222', display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span>LTIM</span>
-                        <span style={{ fontSize: '10px', background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: '3px', fontWeight: 'bold' }}>
-                          100% Demat
+                        <span style={{ fontSize: '10px', background: '#e8f5e9', color: '#2e7d32', padding: '2px 7px', borderRadius: '3px', fontWeight: 'bold' }}>
+                          100% Demat Allocation
                         </span>
                       </div>
-                      <div style={{ fontSize: '11.5px', color: '#555', marginTop: '3px' }}>
-                        Total Shares: <strong style={{ color: '#387ed1', fontSize: '13px' }}>{holdings.reduce((sum, h) => sum + h.qty, 0)}</strong> units
+                      <div style={{ fontSize: '12px', color: '#555', marginTop: '4px' }}>
+                        Total Shares: <strong style={{ color: '#387ed1', fontSize: '13.5px' }}>{holdings.reduce((sum, h) => sum + h.qty, 0)}</strong> units (Demat Settled)
                       </div>
-                      <div style={{ fontSize: '11px', color: '#777', marginTop: '2px' }}>
-                        Avg: ₹3,580.00 • CMP: <strong className={flashStates.LTIM === 'up' ? 'flash-up text-up' : flashStates.LTIM === 'down' ? 'flash-down text-down' : ''}>₹{(stockPrices.LTIM || 3863).toFixed(2)}</strong>
+                      <div style={{ fontSize: '11.5px', color: '#666', marginTop: '3px' }}>
+                        Avg: ₹3,580.00 • Live CMP: <strong className={flashStates.LTIM === 'up' ? 'flash-up text-up' : flashStates.LTIM === 'down' ? 'flash-down text-down' : ''} style={{ color: '#2e7d32' }}>₹{(stockPrices.LTIM || 4304.50).toFixed(2)}</strong>
                       </div>
                     </div>
                   </div>
@@ -805,8 +1012,10 @@ export default function Kite() {
                     <th>Qty.</th>
                     <th>Avg. Cost</th>
                     <th>LTP</th>
-                    <th>Current Value</th>
+                    <th>Cur. Val</th>
                     <th>P&amp;L</th>
+                    <th>Net Chg.</th>
+                    <th>Day's P&amp;L</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -816,7 +1025,10 @@ export default function Kite() {
                       const value = hold.currentPrice * hold.qty;
                       const cost = hold.buyPrice * hold.qty;
                       const returnVal = value - cost;
-                      const percent = (returnVal / cost) * 100;
+                      const percent = cost > 0 ? (returnVal / cost) * 100 : 0;
+                      const base = basePrices[hold.symbol] || hold.buyPrice;
+                      const dayVal = (hold.currentPrice - base) * hold.qty;
+                      const dayPct = ((hold.currentPrice - base) / base) * 100;
 
                       return (
                         <tr key={hold.symbol}>
@@ -828,16 +1040,22 @@ export default function Kite() {
                           <td>{hold.qty}</td>
                           <td>₹{hold.buyPrice.toFixed(2)}</td>
                           <td className={flashStates[hold.symbol] === 'up' ? 'flash-up text-up' : flashStates[hold.symbol] === 'down' ? 'flash-down text-down' : ''}>₹{hold.currentPrice.toFixed(2)}</td>
-                          <td>₹{value.toFixed(2)}</td>
+                          <td>₹{value.toLocaleString([], { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                           <td className={returnVal >= 0 ? 'text-up' : 'text-down'}>
-                            <strong>₹{returnVal.toFixed(2)} ({percent.toFixed(2)}%)</strong>
+                            <strong>₹{returnVal.toLocaleString([], { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ({percent.toFixed(2)}%)</strong>
+                          </td>
+                          <td className={dayPct >= 0 ? 'text-up' : 'text-down'}>
+                            {dayPct >= 0 ? '+' : ''}{dayPct.toFixed(2)}%
+                          </td>
+                          <td className={dayVal >= 0 ? 'text-up' : 'text-down'}>
+                            {dayVal >= 0 ? '+' : ''}₹{dayVal.toFixed(2)}
                           </td>
                         </tr>
                       );
                     })}
                   {holdings.filter(h => h.symbol.toLowerCase().includes(holdingsSearch.toLowerCase())).length === 0 && (
                     <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '30px', color: '#999' }}>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#999' }}>
                         No holdings matching "{holdingsSearch}"
                       </td>
                     </tr>
@@ -847,27 +1065,33 @@ export default function Kite() {
 
               <div style={{ 
                 marginTop: '25px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px',
-                background: '#fafafa', padding: '15px 20px', borderRadius: '4px', border: '1px solid #eee', alignItems: 'center'
+                background: '#fafafa', padding: '16px 20px', borderRadius: '4px', border: '1px solid #eee', alignItems: 'center'
               }}>
                 <div>
                   <span style={{ fontSize: '11px', color: '#888' }}>Total Investment</span>
-                  <h4 style={{ margin: '4px 0 0 0', fontSize: '15px' }}>₹{totalCostValue.toLocaleString([], { maximumFractionDigits: 2 })}</h4>
+                  <h4 style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#333' }}>₹{totalCostValue.toLocaleString([], { minimumFractionDigits: 2 })}</h4>
                 </div>
                 <div>
                   <span style={{ fontSize: '11px', color: '#888' }}>Current Valuation</span>
-                  <h4 style={{ margin: '4px 0 0 0', fontSize: '15px' }}>₹{totalHoldingsValue.toLocaleString([], { maximumFractionDigits: 2 })}</h4>
+                  <h4 style={{ margin: '4px 0 0 0', fontSize: '16px', color: '#387ed1' }}>₹{totalHoldingsValue.toLocaleString([], { minimumFractionDigits: 2 })}</h4>
+                </div>
+                <div>
+                  <span style={{ fontSize: '11px', color: '#888' }}>Today's Return</span>
+                  <h4 className={totalDayPnl >= 0 ? 'text-up' : 'text-down'} style={{ margin: '4px 0 0 0', fontSize: '16px' }}>
+                    {totalDayPnl >= 0 ? '+' : ''}₹{totalDayPnl.toLocaleString([], { minimumFractionDigits: 2 })} ({dayPnlPercent.toFixed(2)}%)
+                  </h4>
                 </div>
                 <div>
                   <span style={{ fontSize: '11px', color: '#888' }}>Total Return</span>
-                  <h4 className={totalPnl >= 0 ? 'text-up' : 'text-down'} style={{ margin: '4px 0 0 0', fontSize: '15px' }}>
-                    ₹{totalPnl.toLocaleString([], { maximumFractionDigits: 2 })} ({pnlPercent.toFixed(2)}%)
+                  <h4 className={totalPnl >= 0 ? 'text-up' : 'text-down'} style={{ margin: '4px 0 0 0', fontSize: '16px' }}>
+                    ₹{totalPnl.toLocaleString([], { minimumFractionDigits: 2 })} ({pnlPercent.toFixed(2)}%)
                   </h4>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ 
-                    width: '38px', height: '38px', borderRadius: '50%', background: '#e3f2fd', 
+                    width: '42px', height: '42px', borderRadius: '50%', background: '#e3f2fd', 
                     border: '2px solid #387ed1', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: '800', color: '#1976d2', fontSize: '13px', flexShrink: 0
+                    fontWeight: '800', color: '#1976d2', fontSize: '14px', flexShrink: 0
                   }}>
                     {holdings.reduce((sum, h) => sum + h.qty, 0)}
                   </div>
@@ -876,6 +1100,7 @@ export default function Kite() {
                     <h4 style={{ margin: '2px 0 0 0', fontSize: '13px', color: '#333' }}>
                       {holdings.reduce((sum, h) => sum + h.qty, 0)} shares ({holdings[0]?.symbol || 'LTIM'})
                     </h4>
+                    <span style={{ fontSize: '10px', color: '#4caf50', fontWeight: 'bold' }}>● Delivery Settled</span>
                   </div>
                 </div>
               </div>
@@ -1018,23 +1243,47 @@ export default function Kite() {
           {activeTab !== 'APPS' && activeTab !== 'FUNDS' && (
             <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               
-              {/* TradingView Header Instrument info */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h4 style={{ margin: 0, fontSize: '14px', fontWeight: '600' }}>{selectedStock} Chart (NSE)</h4>
-                  <span style={{ fontSize: '11px', color: '#999' }}>Live Ticker</span>
-                  <span className={(stockPrices[selectedStock] || 0) >= (prevPrices[selectedStock] || 0) ? 'text-up' : 'text-down'} style={{ fontSize: '12px', fontWeight: 'bold' }}>
+              {/* TradingView Header Instrument info with Quick Actions */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '10px 16px', borderRadius: '4px', border: '1px solid #e0e0e0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: '700', color: '#222' }}>{selectedStock}</h4>
+                    <span style={{ fontSize: '9px', background: '#f5f5f5', color: '#777', padding: '1px 5px', borderRadius: '2px', fontWeight: '600' }}>NSE</span>
+                  </div>
+                  <span className={(stockPrices[selectedStock] || 0) >= (prevPrices[selectedStock] || 0) ? 'text-up' : 'text-down'} style={{ fontSize: '15px', fontWeight: '700' }}>
                     ₹{(stockPrices[selectedStock] || 0).toFixed(2)}
                   </span>
-                  <span style={{ fontSize: '10.5px', color: '#555' }}>
+                  <span style={{ fontSize: '11px', color: '#555', fontWeight: '500' }}>
                     {getStockAbsoluteChange(selectedStock)} ({getStockPercentChange(selectedStock)})
                   </span>
                 </div>
                 
-                <div style={{ fontSize: '11px', color: '#ff5722', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {chartIndicator === 'EMA' && <span style={{ background: '#fff3e0', color: '#e65100', padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 'bold' }}>EMA (7) Active</span>}
-                  {chartIndicator === 'RSI' && <span style={{ background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 'bold' }}>RSI (14) = 58.4</span>}
-                  <span>⚡ TradingView Engine Active</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  {/* Quick B / S action buttons */}
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button 
+                      type="button"
+                      className="watchlist-action-btn buy" 
+                      style={{ width: 'auto', padding: '4px 12px', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      onClick={() => openOrderModal(selectedStock, 'BUY')}
+                    >
+                      B BUY
+                    </button>
+                    <button 
+                      type="button"
+                      className="watchlist-action-btn sell" 
+                      style={{ width: 'auto', padding: '4px 12px', fontSize: '11px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      onClick={() => openOrderModal(selectedStock, 'SELL')}
+                    >
+                      S SELL
+                    </button>
+                  </div>
+
+                  <div style={{ fontSize: '11px', color: '#ff5722', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px', borderLeft: '1px solid #eee', paddingLeft: '12px' }}>
+                    {chartIndicator === 'EMA' && <span style={{ background: '#fff3e0', color: '#e65100', padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 'bold' }}>EMA (7) Active</span>}
+                    {chartIndicator === 'RSI' && <span style={{ background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: '3px', fontSize: '10px', fontWeight: 'bold' }}>RSI (14) = 58.4</span>}
+                    <span style={{ color: '#888', fontSize: '11px' }}>⚡ TradingView Engine</span>
+                  </div>
                 </div>
               </div>
 
@@ -1068,7 +1317,7 @@ export default function Kite() {
                   ))}
                 </div>
 
-                {/* Main Chart with Recharts */}
+                {/* Main Chart with Recharts & SVG Candlesticks */}
                 <div className="tv-chart-main">
                   
                   {/* Top Chart Navigation Options */}
@@ -1117,71 +1366,77 @@ export default function Kite() {
                     </div>
                   </div>
 
-                  {/* Canvas area */}
-                  <div style={{ flex: 1, padding: '10px 5px 5px 5px' }}>
-                    <ResponsiveContainer width="100%" height="95%">
-                      <AreaChart data={chartData.map((d, idx, arr) => {
-                        let ema = d.price;
-                        if (idx >= 3) {
-                          const slice = arr.slice(Math.max(0, idx - 5), idx + 1);
-                          ema = parseFloat((slice.reduce((s, p) => s + p.price, 0) / slice.length).toFixed(2));
-                        }
-                        return { ...d, ema };
-                      })}>
-                        <defs>
-                          <linearGradient id="chartColor" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor={chartType === 'candle' ? '#4caf50' : '#2196f3'} stopOpacity={0.25}/>
-                            <stop offset="95%" stopColor={chartType === 'candle' ? '#4caf50' : '#2196f3'} stopOpacity={0.0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                        <XAxis dataKey="date" stroke="#888" fontSize={9} tickLine={false} />
-                        <YAxis domain={['auto', 'auto']} stroke="#888" fontSize={9} tickLine={false} orientation="right" />
-                        <Tooltip 
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              const d = payload[0].payload;
-                              const isUp = d.close >= d.open;
-                              return (
-                                <div style={{ background: '#fff', border: '1px solid #ddd', padding: '8px 12px', borderRadius: '4px', fontSize: '11px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-                                  <div style={{ fontWeight: '600', marginBottom: '4px', color: '#555' }}>{d.dateLabel ? `${d.dateLabel} ${d.date}` : d.date}</div>
-                                  <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '3px 12px' }}>
-                                    <span style={{ color: '#888' }}>Open:</span> <strong>₹{d.open}</strong>
-                                    <span style={{ color: '#888' }}>High:</span> <strong style={{ color: '#4caf50' }}>₹{d.high}</strong>
-                                    <span style={{ color: '#888' }}>Low:</span> <strong style={{ color: '#f44336' }}>₹{d.low}</strong>
-                                    <span style={{ color: '#888' }}>Close:</span> <strong style={{ color: isUp ? '#4caf50' : '#f44336' }}>₹{d.close}</strong>
-                                    <span style={{ color: '#888' }}>Vol:</span> <span>{d.volume ? d.volume.toLocaleString() : 'N/A'}</span>
-                                    {chartIndicator === 'EMA' && d.ema && (
-                                      <>
-                                        <span style={{ color: '#ff9800' }}>EMA (7):</span> <strong style={{ color: '#ff9800' }}>₹{d.ema}</strong>
-                                      </>
-                                    )}
+                  {/* Canvas area: Real Candlesticks OR Area Chart */}
+                  <div style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {chartType === 'candle' ? (
+                      <div style={{ width: '100%', height: '100%' }}>
+                        {renderCandleSvgChart()}
+                      </div>
+                    ) : (
+                      <ResponsiveContainer width="100%" height="95%">
+                        <AreaChart data={chartData.map((d, idx, arr) => {
+                          let ema = d.price;
+                          if (idx >= 3) {
+                            const slice = arr.slice(Math.max(0, idx - 5), idx + 1);
+                            ema = parseFloat((slice.reduce((s, p) => s + p.price, 0) / slice.length).toFixed(2));
+                          }
+                          return { ...d, ema };
+                        })}>
+                          <defs>
+                            <linearGradient id="chartColor" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#2196f3" stopOpacity={0.25}/>
+                              <stop offset="95%" stopColor="#2196f3" stopOpacity={0.0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                          <XAxis dataKey="date" stroke="#888" fontSize={9} tickLine={false} />
+                          <YAxis domain={['auto', 'auto']} stroke="#888" fontSize={9} tickLine={false} orientation="right" />
+                          <Tooltip 
+                            content={({ active, payload }) => {
+                              if (active && payload && payload.length) {
+                                const d = payload[0].payload;
+                                const isUp = d.close >= d.open;
+                                return (
+                                  <div style={{ background: '#fff', border: '1px solid #ddd', padding: '8px 12px', borderRadius: '4px', fontSize: '11px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                                    <div style={{ fontWeight: '600', marginBottom: '4px', color: '#555' }}>{d.dateLabel ? `${d.dateLabel} ${d.date}` : d.date}</div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '3px 12px' }}>
+                                      <span style={{ color: '#888' }}>Open:</span> <strong>₹{d.open}</strong>
+                                      <span style={{ color: '#888' }}>High:</span> <strong style={{ color: '#4caf50' }}>₹{d.high}</strong>
+                                      <span style={{ color: '#888' }}>Low:</span> <strong style={{ color: '#f44336' }}>₹{d.low}</strong>
+                                      <span style={{ color: '#888' }}>Close:</span> <strong style={{ color: isUp ? '#4caf50' : '#f44336' }}>₹{d.close}</strong>
+                                      <span style={{ color: '#888' }}>Vol:</span> <span>{d.volume ? d.volume.toLocaleString() : 'N/A'}</span>
+                                      {chartIndicator === 'EMA' && d.ema && (
+                                        <>
+                                          <span style={{ color: '#ff9800' }}>EMA (7):</span> <strong style={{ color: '#ff9800' }}>₹{d.ema}</strong>
+                                        </>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="price" 
-                          stroke={chartType === 'candle' ? '#4caf50' : '#2196f3'} 
-                          fill="url(#chartColor)" 
-                          strokeWidth={2} 
-                        />
-                        {chartIndicator === 'EMA' && (
+                                );
+                              }
+                              return null;
+                            }}
+                          />
                           <Area 
                             type="monotone" 
-                            dataKey="ema" 
-                            stroke="#ff9800" 
+                            dataKey="price" 
+                            stroke="#2196f3" 
+                            fill="url(#chartColor)" 
                             strokeWidth={2} 
-                            fill="none" 
-                            dot={false} 
                           />
-                        )}
-                      </AreaChart>
-                    </ResponsiveContainer>
+                          {chartIndicator === 'EMA' && (
+                            <Area 
+                              type="monotone" 
+                              dataKey="ema" 
+                              stroke="#ff9800" 
+                              strokeWidth={2} 
+                              fill="none" 
+                              dot={false} 
+                            />
+                          )}
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    )}
                   </div>
                 </div>
 

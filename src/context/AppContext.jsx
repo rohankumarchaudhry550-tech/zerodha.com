@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 export const AppContext = createContext();
 
 const initialHoldings = [
-  { symbol: 'LTIM', name: 'LTIMindtree Limited', qty: 89, buyPrice: 3580.0, currentPrice: 3863.00 }
+  { symbol: 'LTIM', name: 'LTIMindtree Limited', qty: 89, buyPrice: 3580.0, currentPrice: 4304.50 }
 ];
 
 const initialMutualFunds = [
@@ -13,16 +13,40 @@ const initialMutualFunds = [
   { id: 'parag-parikh', name: 'Parag Parikh Flexi Cap Direct Growth', category: 'Equity - Flexi Cap', nav: 68.40, return3y: '22.5%', logo: '🟢' }
 ];
 
+export const basePrices = {
+  LTIM: 4224.80,     // Prev Close (~+1.89% day gain to 4304.50)
+  RELIANCE: 1330.00, // Prev Close (+0.69%)
+  TCS: 2438.00,      // Prev Close (+0.59%)
+  HDFCBANK: 802.00,  // Prev Close (+0.82%)
+  INFY: 1510.00,     // Prev Close (+0.95%)
+  ITC: 430.50,       // Prev Close (+0.53%)
+  SBIN: 810.00,      // Prev Close (+0.64%)
+  NIFTY50: 25180.00, // Prev Close (+0.27%)
+  SENSEX: 81750.00   // Prev Close (+0.26%)
+};
+
+export const stockStats = {
+  LTIM: { high52: 6430.00, low52: 3528.00, open: 4235.00, high: 4338.00, low: 4215.00, volume: 842190, name: 'LTIMindtree Limited', lotSize: 1 },
+  RELIANCE: { high52: 1608.80, low52: 1120.00, open: 1332.00, high: 1345.50, low: 1328.00, volume: 4950210, name: 'Reliance Industries Limited', lotSize: 1 },
+  TCS: { high52: 4592.25, low52: 2310.00, open: 2440.00, high: 2465.00, low: 2430.00, volume: 1845300, name: 'Tata Consultancy Services', lotSize: 1 },
+  HDFCBANK: { high52: 1794.00, low52: 730.00, open: 804.00, high: 812.50, low: 801.00, volume: 6890400, name: 'HDFC Bank Limited', lotSize: 1 },
+  INFY: { high52: 1991.45, low52: 1358.00, open: 1515.00, high: 1530.00, low: 1508.00, volume: 3210400, name: 'Infosys Limited', lotSize: 1 },
+  ITC: { high52: 520.00, low52: 399.00, open: 431.00, high: 435.50, low: 429.50, volume: 5612000, name: 'ITC Limited', lotSize: 1 },
+  SBIN: { high52: 912.00, low52: 543.00, open: 812.00, high: 820.00, low: 808.50, volume: 4120300, name: 'State Bank of India', lotSize: 1 },
+  NIFTY50: { high52: 26277.35, low52: 21281.45, open: 25200.00, high: 25280.00, low: 25160.00, volume: 0, name: 'Nifty 50 Index', lotSize: 50 },
+  SENSEX: { high52: 85978.25, low52: 70001.20, open: 81800.00, high: 82100.00, low: 81680.00, volume: 0, name: 'BSE SENSEX Index', lotSize: 10 }
+};
+
 const initialStockPrices = {
-  LTIM: 3863.00,
-  RELIANCE: 2465.30,
-  TCS: 3192.40,
-  HDFCBANK: 1548.90,
-  INFY: 1445.00,
-  ITC: 432.50,
-  SBIN: 815.40,
-  NIFTY50: 23500.50,
-  SENSEX: 77200.80
+  LTIM: 4304.50,
+  RELIANCE: 1339.20,
+  TCS: 2452.40,
+  HDFCBANK: 808.60,
+  INFY: 1524.30,
+  ITC: 432.80,
+  SBIN: 815.20,
+  NIFTY50: 25248.50,
+  SENSEX: 81960.00
 };
 
 export const AppProvider = ({ children }) => {
@@ -36,10 +60,10 @@ export const AppProvider = ({ children }) => {
   const [margin, setMargin] = useState(124500.75); // wallet balance
   const [holdings, setHoldings] = useState(initialHoldings);
   const [orders, setOrders] = useState([
-    { id: 'ORD001', symbol: 'LTIM', type: 'BUY', qty: 89, price: 3580.0, status: 'COMPLETE', time: '09:15 AM' }
+    { id: 'ORD001', symbol: 'LTIM', type: 'BUY', product: 'CNC', qty: 89, price: 3580.0, status: 'COMPLETE', time: '09:15:24 AM' }
   ]);
   const [positions, setPositions] = useState([
-    { symbol: 'LTIM', type: 'CNC', qty: 89, buyPrice: 3580.0, currentPrice: 3863.00 }
+    { symbol: 'LTIM', type: 'CNC', qty: 89, buyPrice: 3580.0, currentPrice: 4304.50 }
   ]);
   const [mutualFunds, setMutualFunds] = useState(initialMutualFunds);
   const [mfHoldings, setMfHoldings] = useState([
@@ -68,23 +92,62 @@ export const AppProvider = ({ children }) => {
     { id: 'TKT902', subject: 'Margin allocation details request', status: 'OPEN', date: '2026-06-21' }
   ]);
 
-  // Live stock prices simulator
+  // Real-time stock prices & tick engine
   const [stockPrices, setStockPrices] = useState(initialStockPrices);
+  const [marketStats, setMarketStats] = useState(stockStats);
 
+  // Ultra-realistic live tick simulation matching NSE tick size (₹0.05)
   useEffect(() => {
-    const interval = setInterval(() => {
+    const tickInterval = setInterval(() => {
       setStockPrices(prev => {
         const next = { ...prev };
-        Object.keys(next).forEach(symbol => {
-          const changePercent = (Math.random() - 0.5) * 0.002; // +/- 0.1% change
-          next[symbol] = parseFloat((next[symbol] * (1 + changePercent)).toFixed(2));
+        const tickSymbols = Object.keys(next);
+        
+        // Randomly pick symbols to tick each cycle (simulating real market trade streams)
+        tickSymbols.forEach(symbol => {
+          // 80% chance of a tick occurring
+          if (Math.random() < 0.8) {
+            let tick = 0;
+            if (symbol === 'NIFTY50') {
+              // Index ticks by points 0.50 to 3.50
+              const sign = Math.random() > 0.48 ? 1 : -1;
+              tick = parseFloat((sign * (Math.floor(Math.random() * 6) + 1) * 0.5).toFixed(2));
+            } else if (symbol === 'SENSEX') {
+              // Sensex ticks by points 1.0 to 12.0
+              const sign = Math.random() > 0.48 ? 1 : -1;
+              tick = parseFloat((sign * (Math.floor(Math.random() * 10) + 1) * 1.25).toFixed(2));
+            } else {
+              // Indian stocks trade in steps of ₹0.05
+              const ticks = [-0.25, -0.20, -0.15, -0.10, -0.05, 0.05, 0.10, 0.15, 0.20, 0.25];
+              tick = ticks[Math.floor(Math.random() * ticks.length)];
+            }
+            
+            const newPrice = parseFloat((next[symbol] + tick).toFixed(2));
+            if (newPrice > 0) {
+              next[symbol] = newPrice;
+            }
+          }
         });
         return next;
       });
-    }, 1500);
 
-    return () => clearInterval(interval);
-  }, []);
+      // Update volume and high/low stats
+      setMarketStats(prev => {
+        const next = { ...prev };
+        Object.keys(next).forEach(sym => {
+          const curr = stockPrices[sym];
+          if (curr) {
+            if (curr > next[sym].high) next[sym].high = curr;
+            if (curr < next[sym].low) next[sym].low = curr;
+            next[sym].volume += Math.floor(Math.random() * 40);
+          }
+        });
+        return next;
+      });
+    }, 1200);
+
+    return () => clearInterval(tickInterval);
+  }, [stockPrices]);
 
   // Sync positions and holdings prices when stock prices change
   useEffect(() => {
@@ -136,58 +199,92 @@ export const AppProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
-
-  const executeOrder = (symbol, type, qty, priceType, limitPrice) => {
+  const executeOrder = (symbol, type, qty, priceType, limitPrice, product = 'CNC') => {
     const executedPrice = priceType === 'MARKET' ? stockPrices[symbol] || 100 : parseFloat(limitPrice);
     const orderCost = executedPrice * qty;
 
     if (type === 'BUY' && margin < orderCost) {
-      alert('Insufficient available margin!');
+      alert('Insufficient available margin in trading account!');
       return false;
     }
 
-    // Deduct margin if BUY
     if (type === 'BUY') {
       setMargin(prev => prev - orderCost);
-      // Update positions (MIS/Intraday mock) or holdings
-      setPositions(prev => {
-        const existing = prev.find(p => p.symbol === symbol);
-        if (existing) {
-          const totalQty = existing.qty + qty;
-          const avgPrice = ((existing.buyPrice * existing.qty) + (executedPrice * qty)) / totalQty;
-          return prev.map(p => p.symbol === symbol ? { ...p, qty: totalQty, buyPrice: parseFloat(avgPrice.toFixed(2)) } : p);
-        } else {
-          return [...prev, { symbol, type: 'MIS', qty, buyPrice: executedPrice, currentPrice: executedPrice }];
-        }
-      });
+      if (product === 'CNC') {
+        // Update Delivery Holdings
+        setHoldings(prev => {
+          const existing = prev.find(h => h.symbol === symbol);
+          if (existing) {
+            const totalQty = existing.qty + qty;
+            const avgPrice = ((existing.buyPrice * existing.qty) + (executedPrice * qty)) / totalQty;
+            return prev.map(h => h.symbol === symbol ? { ...h, qty: totalQty, buyPrice: parseFloat(avgPrice.toFixed(2)), currentPrice: executedPrice } : h);
+          } else {
+            const meta = stockStats[symbol] || { name: `${symbol} Limited` };
+            return [...prev, { symbol, name: meta.name, qty, buyPrice: executedPrice, currentPrice: executedPrice }];
+          }
+        });
+      } else {
+        // Intraday MIS
+        setPositions(prev => {
+          const existing = prev.find(p => p.symbol === symbol && p.type === 'MIS');
+          if (existing) {
+            const totalQty = existing.qty + qty;
+            const avgPrice = ((existing.buyPrice * existing.qty) + (executedPrice * qty)) / totalQty;
+            return prev.map(p => (p.symbol === symbol && p.type === 'MIS') ? { ...p, qty: totalQty, buyPrice: parseFloat(avgPrice.toFixed(2)) } : p);
+          } else {
+            return [...prev, { symbol, type: 'MIS', qty, buyPrice: executedPrice, currentPrice: executedPrice }];
+          }
+        });
+      }
     } else {
       // SELL order
-      const pos = positions.find(p => p.symbol === symbol);
-      if (!pos || pos.qty < qty) {
-        alert('Insufficient position quantity to sell!');
-        return false;
+      if (product === 'CNC') {
+        const hold = holdings.find(h => h.symbol === symbol);
+        if (!hold || hold.qty < qty) {
+          alert('Insufficient Demat holding quantity to sell!');
+          return false;
+        }
+        setMargin(prev => prev + orderCost);
+        setHoldings(prev => {
+          return prev.map(h => {
+            if (h.symbol === symbol) {
+              const nextQty = h.qty - qty;
+              return nextQty > 0 ? { ...h, qty: nextQty } : null;
+            }
+            return h;
+          }).filter(Boolean);
+        });
+      } else {
+        const pos = positions.find(p => p.symbol === symbol);
+        if (!pos || pos.qty < qty) {
+          alert('Insufficient intraday position quantity to sell!');
+          return false;
+        }
+        setMargin(prev => prev + orderCost);
+        setPositions(prev => {
+          return prev.map(p => {
+            if (p.symbol === symbol) {
+              const nextQty = p.qty - qty;
+              return nextQty > 0 ? { ...p, qty: nextQty } : null;
+            }
+            return p;
+          }).filter(Boolean);
+        });
       }
-      setMargin(prev => prev + orderCost);
-      setPositions(prev => {
-        return prev.map(p => {
-          if (p.symbol === symbol) {
-            const nextQty = p.qty - qty;
-            return nextQty > 0 ? { ...p, qty: nextQty } : null;
-          }
-          return p;
-        }).filter(Boolean);
-      });
     }
 
-    // Add to order book
+    // Add to order book with exact timestamp
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const newOrder = {
-      id: `ORD${Math.floor(100 + Math.random() * 900)}`,
+      id: `ORD${Math.floor(1000 + Math.random() * 9000)}`,
       symbol,
       type,
+      product,
       qty,
       price: executedPrice,
       status: 'COMPLETE',
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: timeStr
     };
     setOrders(prev => [newOrder, ...prev]);
     return true;
@@ -210,7 +307,7 @@ export const AppProvider = ({ children }) => {
     <AppContext.Provider value={{
       isAuthenticated, user, login, logout, validateCredentials, verifyOtpAndLogin,
       margin, holdings, orders, positions, mutualFunds, mfHoldings, kyc, setKyc, tickets, setTickets, stockPrices,
-      executeOrder, depositCash, withdrawCash, setHoldings, setMfHoldings
+      marketStats, basePrices, executeOrder, depositCash, withdrawCash, setHoldings, setMfHoldings
     }}>
       {children}
     </AppContext.Provider>

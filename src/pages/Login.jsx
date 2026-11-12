@@ -125,13 +125,12 @@ export default function Login() {
 
               <button 
                 type="submit" 
+                className="btn-login"
                 style={{ 
                   width: '100%', height: '40px', fontSize: '14px', fontWeight: '600', 
                   backgroundColor: '#ff5722', color: '#fff', border: 'none', borderRadius: '3px',
                   cursor: 'pointer', transition: 'background-color 0.15s'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e64a19'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ff5722'}
               >
                 Login
               </button>
@@ -173,13 +172,12 @@ export default function Login() {
 
               <button 
                 type="submit" 
+                className="btn-login"
                 style={{ 
                   width: '100%', height: '40px', fontSize: '14px', fontWeight: '600', 
                   backgroundColor: '#ff5722', color: '#fff', border: 'none', borderRadius: '3px',
                   cursor: 'pointer', transition: 'background-color 0.15s'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e64a19'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ff5722'}
               >
                 Continue to Trading Desk
               </button>
