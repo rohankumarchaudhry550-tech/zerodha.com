@@ -271,18 +271,22 @@ export default function Coin() {
               {/* Installment input */}
               <div class="row between" style={{ alignItems: 'center' }}>
                 <div class="six columns">
-                  <label>SIP Installment Amount (₹)</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>SIP Installment Amount (₹)</label>
                   <input 
                     type="number" 
                     value={sipAmt} 
                     onChange={(e) => setSipAmt(Math.max(500, parseInt(e.target.value) || 0))} 
-                    style={{ height: '35px', margin: 0 }}
+                    style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', margin: 0 }}
                   />
-                  <span style={{ fontSize: '11px', color: '#888' }}>Min amount: ₹500</span>
+                  <span style={{ fontSize: '11px', color: '#888', display: 'block', marginTop: '4px' }}>Min amount: ₹500</span>
                 </div>
                 <div class="five columns">
-                  <label>Installment Cycle</label>
-                  <select value={sipFreq} onChange={(e) => setSipFreq(e.target.value)} style={{ width: '100%', height: '35px', margin: 0 }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Installment Cycle</label>
+                  <select 
+                    value={sipFreq} 
+                    onChange={(e) => setSipFreq(e.target.value)} 
+                    style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer', margin: 0 }}
+                  >
                     <option value="Daily">Daily SIP</option>
                     <option value="Weekly">Weekly SIP</option>
                     <option value="Monthly">Monthly SIP</option>

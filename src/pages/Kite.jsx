@@ -1560,7 +1560,7 @@ export default function Kite() {
                   type="number" 
                   value={orderQty} 
                   onChange={(e) => setOrderQty(Math.max(1, parseInt(e.target.value) || 0))}
-                  style={{ height: '32px', marginTop: '4px', fontSize: '13px', width: '100%', boxSizing: 'border-box' }}
+                  style={{ height: '38px', minHeight: '38px', padding: '6px 10px', marginTop: '4px', fontSize: '13px', width: '100%', boxSizing: 'border-box', border: '1px solid #d1d1d1', borderRadius: '3px' }}
                 />
               </div>
 
@@ -1571,7 +1571,7 @@ export default function Kite() {
                     type="button" 
                     onClick={() => setOrderPriceType('MARKET')}
                     style={{ 
-                      flex: 1, padding: '4px 0', border: '1px solid #ddd', fontSize: '11px', borderRadius: '3px', cursor: 'pointer',
+                      flex: 1, height: '38px', padding: '4px 0', border: '1px solid #ddd', fontSize: '12px', fontWeight: '600', borderRadius: '3px', cursor: 'pointer',
                       background: orderPriceType === 'MARKET' ? '#387ed1' : '#f5f5f5',
                       color: orderPriceType === 'MARKET' ? '#fff' : '#333'
                     }}
@@ -1580,7 +1580,7 @@ export default function Kite() {
                     type="button" 
                     onClick={() => setOrderPriceType('LIMIT')}
                     style={{ 
-                      flex: 1, padding: '4px 0', border: '1px solid #ddd', fontSize: '11px', borderRadius: '3px', cursor: 'pointer',
+                      flex: 1, height: '38px', padding: '4px 0', border: '1px solid #ddd', fontSize: '12px', fontWeight: '600', borderRadius: '3px', cursor: 'pointer',
                       background: orderPriceType === 'LIMIT' ? '#387ed1' : '#f5f5f5',
                       color: orderPriceType === 'LIMIT' ? '#fff' : '#333'
                     }}
@@ -1596,7 +1596,7 @@ export default function Kite() {
                   type="number" 
                   value={orderLimitPrice} 
                   onChange={(e) => setOrderLimitPrice(Math.max(0.1, parseFloat(e.target.value) || 0))}
-                  style={{ height: '32px', marginTop: '4px', fontSize: '13px', width: '100%', boxSizing: 'border-box' }}
+                  style={{ height: '38px', minHeight: '38px', padding: '6px 10px', marginTop: '4px', fontSize: '13px', width: '100%', boxSizing: 'border-box', border: '1px solid #d1d1d1', borderRadius: '3px' }}
                   step="0.05"
                 />
               </div>
@@ -1649,27 +1649,27 @@ export default function Kite() {
             <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '0 0 15px 0' }} />
             <form onSubmit={executeDeposit}>
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ fontSize: '12px', color: '#555' }}>Amount to Deposit (₹)</label>
+                <label style={{ fontSize: '12px', color: '#555', display: 'block', marginBottom: '4px' }}>Amount to Deposit (₹)</label>
                 <input 
                   type="number" 
                   value={fundInput}
                   onChange={(e) => setFundInput(Math.max(10, parseInt(e.target.value) || 0))}
-                  style={{ height: '34px', width: '100%', marginTop: '5px', boxSizing: 'border-box' }}
+                  style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', width: '100%', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1' }}
                   required
                 />
               </div>
               <div style={{ marginBottom: '20px' }}>
-                <label style={{ fontSize: '12px', color: '#555' }}>Select Method</label>
+                <label style={{ fontSize: '12px', color: '#555', display: 'block', marginBottom: '4px' }}>Select Method</label>
                 <select 
                   value={payMethod}
                   onChange={(e) => setPayMethod(e.target.value)}
-                  style={{ width: '100%', height: '34px', marginTop: '5px' }}
+                  style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
                 >
                   <option value="UPI">UPI Gateway (GooglePay/PhonePe)</option>
                   <option value="Netbanking">HDFC Netbanking Portal</option>
                 </select>
               </div>
-              <button type="submit" style={{ width: '100%', height: '36px', background: '#387ed1' }}>Credit Instantly</button>
+              <button type="submit" style={{ width: '100%', height: '42px', minHeight: '42px', background: '#387ed1', color: '#fff', fontSize: '14px', fontWeight: '600', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>Credit Instantly</button>
             </form>
           </div>
         </div>
@@ -1686,19 +1686,19 @@ export default function Kite() {
             <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '0 0 15px 0' }} />
             <form onSubmit={executeWithdraw}>
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ fontSize: '12px', color: '#555' }}>Withdrawal Amount (₹)</label>
+                <label style={{ fontSize: '12px', color: '#555', display: 'block', marginBottom: '4px' }}>Withdrawal Amount (₹)</label>
                 <input 
                   type="number" 
                   value={fundInput}
                   onChange={(e) => setFundInput(Math.max(10, parseInt(e.target.value) || 0))}
-                  style={{ height: '34px', width: '100%', marginTop: '5px', boxSizing: 'border-box' }}
+                  style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', width: '100%', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1' }}
                   required
                 />
               </div>
               <div style={{ padding: '10px 12px', background: '#fafafa', border: '1px solid #eee', borderRadius: '3px', marginBottom: '20px', fontSize: '11px', color: '#555' }}>
                 🏦 Settlement will clear to your linked account: <strong>HDFC Bank (XXXX-XXXX-1234)</strong>. No other bank accounts are mapped.
               </div>
-              <button type="submit" style={{ width: '100%', height: '36px', background: '#4caf50' }}>Submit Withdrawal Request</button>
+              <button type="submit" style={{ width: '100%', height: '42px', minHeight: '42px', background: '#4caf50', color: '#fff', fontSize: '14px', fontWeight: '600', borderRadius: '4px', border: 'none', cursor: 'pointer' }}>Submit Withdrawal Request</button>
             </form>
           </div>
         </div>

@@ -12,7 +12,7 @@ export default function Home() {
           <p class="landing-subheading text-center" style={{ fontSize: '20px', color: '#666' }}>
             Online platform to invest in stocks, derivatives, mutual funds, ETFs, bonds, and more.
           </p>
-          <Link to="/signup" class="button" id="acop_link" style={{ fontSize: '20px', padding: '12px 40px', marginTop: '20px' }}>Sign up for free</Link>
+          <a href="https://zerodha.com/open-account/" target="_blank" rel="noreferrer" class="button" id="acop_link" style={{ fontSize: '20px', padding: '12px 40px', marginTop: '20px', display: 'inline-block' }}>Sign up for free</a>
         </div>
       </section>
 
@@ -49,11 +49,11 @@ export default function Home() {
               </div>
             </div>
             <div class="seven columns text-center">
-              <Link to="/products">
+              <a href="https://zerodha.com/products/" target="_blank" rel="noreferrer">
                 <img src="/static/images/ecosystem.png" alt="The Zerodha Universe" class="ecosystem-image" />
-              </Link>
+              </a>
               <p class="text-center space-top">
-                <Link to="/products">Explore our products <i class="icon-arrow-right"></i></Link>
+                <a href="https://zerodha.com/products/" target="_blank" rel="noreferrer">Explore our products <i class="icon-arrow-right"></i></a>
               </p>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function Home() {
           <img src="/static/images/kc-logo-landing.svg" alt="Kite Connect logo" />
           <span class="text-grey" style={{ fontSize: '15px' }}>
             Need more? Build your own trading and investing experience with Kite Connect, simple HTTP APIs to place orders, stream market data, manage your account, and more. 
-            <Link to="/kite-connect">Explore <span class="icon icon-arrow-right"></span></Link>
+            <a href="https://kite.trade/" target="_blank" rel="noreferrer">Explore <span class="icon icon-arrow-right"></span></a>
           </span>
           <img class="kc-banner-image hide-on-mobile" src="/static/images/kc-banner-image.svg" alt="Kite Connect banner image" />
         </div>
@@ -98,7 +98,7 @@ export default function Home() {
             </div>
           </div>
           <p class="pricing-link">
-            <Link to="/pricing">See pricing <i class="icon-arrow-right"></i></Link>
+            <a href="https://zerodha.com/pricing/" target="_blank" rel="noreferrer">See pricing <i class="icon-arrow-right"></i></a>
           </p>
         </div>
       </section>
@@ -108,16 +108,16 @@ export default function Home() {
         <div class="container">
           <div class="row between v-align">
             <div class="columns five text-center">
-              <Link to="/varsity">
+              <a href="https://zerodha.com/varsity/" target="_blank" rel="noreferrer">
                 <img class="img-margin" src="/static/images/index-education.svg" alt="Market Education Illustration" />
-              </Link>
+              </a>
             </div>
             <div class="columns six">
               <h2 style={{ fontSize: '32px' }}>Free and open market education</h2>
               <p>
                 Varsity, the largest online stock market education book in the world covering everything from the basics to advanced trading.
               </p>
-              <Link to="/varsity">Varsity <i class="icon-arrow-right"></i></Link>
+              <a href="https://zerodha.com/varsity/" target="_blank" rel="noreferrer">Varsity <i class="icon-arrow-right"></i></a>
               <p class="space-top">
                 TradingQ&amp;A, the most active trading and investment community in India for all your market related queries.
               </p>
@@ -134,7 +134,7 @@ export default function Home() {
           <p class="text-grey text-med">
             Modern platforms and apps, ₹0 investments, and flat ₹20 intraday and F&amp;O trades.
           </p>
-          <Link to="/signup" class="button" style={{ fontSize: '18px', padding: '10px 30px' }}>Sign up for free</Link>
+          <a href="https://zerodha.com/open-account/" target="_blank" rel="noreferrer" class="button" style={{ fontSize: '18px', padding: '10px 30px', display: 'inline-block' }}>Sign up for free</a>
         </div>
       </section>
     </div>

@@ -94,7 +94,7 @@ export default function Login() {
                   placeholder="User ID or email" 
                   required 
                   style={{ 
-                    height: '38px', marginTop: '6px', fontSize: '13px', width: '100%', 
+                    height: '42px', minHeight: '42px', marginTop: '6px', marginBottom: 0, fontSize: '14px', width: '100%', 
                     boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '3px', padding: '0 12px',
                     outline: 'none', transition: 'border-color 0.15s'
                   }}
@@ -114,7 +114,7 @@ export default function Login() {
                   placeholder="Password" 
                   required 
                   style={{ 
-                    height: '38px', marginTop: '6px', fontSize: '13px', width: '100%', 
+                    height: '42px', minHeight: '42px', marginTop: '6px', marginBottom: 0, fontSize: '14px', width: '100%', 
                     boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '3px', padding: '0 12px',
                     outline: 'none', transition: 'border-color 0.15s'
                   }}
@@ -127,7 +127,7 @@ export default function Login() {
                 type="submit" 
                 className="btn-login"
                 style={{ 
-                  width: '100%', height: '40px', fontSize: '14px', fontWeight: '600', 
+                  width: '100%', height: '42px', minHeight: '42px', fontSize: '14px', fontWeight: '600', 
                   backgroundColor: '#ff5722', color: '#fff', border: 'none', borderRadius: '3px',
                   cursor: 'pointer', transition: 'background-color 0.15s'
                 }}

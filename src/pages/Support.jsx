@@ -111,21 +111,25 @@ export default function Support() {
 
             <form onSubmit={fileTicket}>
               <div style={{ marginBottom: '15px' }}>
-                <label>Query Subject</label>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Query Subject</label>
                 <input 
                   type="text" 
                   value={subject} 
                   onChange={(e) => setSubject(e.target.value)} 
                   placeholder="Summarize your issue" 
                   required 
-                  style={{ height: '38px', marginTop: '5px' }}
+                  style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', width: '100%' }}
                 />
               </div>
 
               <div class="row between" style={{ marginBottom: '15px' }}>
                 <div class="twelve columns">
-                  <label>Category</label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)} style={{ width: '100%', height: '38px', marginTop: '5px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Category</label>
+                  <select 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)} 
+                    style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                  >
                     <option value="Kite Login">Kite App &amp; Biometrics</option>
                     <option value="KYC Verification">Account Opening / KYC</option>
                     <option value="Funds / Banking">Funds Deposit &amp; Bank Links</option>

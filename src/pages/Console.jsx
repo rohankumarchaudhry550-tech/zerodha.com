@@ -270,24 +270,28 @@ export default function Console() {
 
             <form onSubmit={handleDeposit}>
               <div style={{ marginBottom: '15px' }}>
-                <label>Deposit Amount (₹)</label>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500', color: '#444' }}>Deposit Amount (₹)</label>
                 <input 
                   type="number" 
                   value={depositAmt} 
                   onChange={(e) => setDepositAmt(Math.max(10, parseInt(e.target.value) || 0))} 
-                  style={{ height: '35px', marginTop: '5px' }} 
+                  style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', lineHeight: 'normal', boxSizing: 'border-box', width: '100%', borderRadius: '4px', border: '1px solid #d1d1d1' }} 
                   required 
                 />
               </div>
               <div style={{ marginBottom: '20px' }}>
-                <label>Payment Method</label>
-                <select value={payMethod} onChange={(e) => setPayMethod(e.target.value)} style={{ width: '100%', height: '35px', marginTop: '5px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500', color: '#444' }}>Payment Method</label>
+                <select 
+                  value={payMethod} 
+                  onChange={(e) => setPayMethod(e.target.value)} 
+                  style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 32px 8px 12px', fontSize: '14px', lineHeight: 'normal', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
                   <option value="UPI">UPI Payment Gateway (₹0 fee)</option>
                   <option value="NETBANKING">Netbanking Instant (₹9 fee)</option>
                   <option value="NEFT">NEFT / IMPS Bank Transfer (₹0 fee)</option>
                 </select>
               </div>
-              <button type="submit" style={{ width: '100%' }}>Add Capital Instantly</button>
+              <button type="submit" style={{ width: '100%', height: '42px', minHeight: '42px', fontSize: '14px', fontWeight: '600', borderRadius: '4px', background: '#387ed1', color: '#fff', border: 'none', cursor: 'pointer' }}>Add Capital Instantly</button>
             </form>
           </div>
 
@@ -298,17 +302,17 @@ export default function Console() {
 
             <form onSubmit={handleWithdraw}>
               <div style={{ marginBottom: '15px' }}>
-                <label>Withdrawal Amount (₹)</label>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500', color: '#444' }}>Withdrawal Amount (₹)</label>
                 <input 
                   type="number" 
                   value={withdrawAmt} 
                   onChange={(e) => setWithdrawAmt(Math.max(10, parseInt(e.target.value) || 0))} 
-                  style={{ height: '35px', marginTop: '5px' }} 
+                  style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', lineHeight: 'normal', boxSizing: 'border-box', width: '100%', borderRadius: '4px', border: '1px solid #d1d1d1' }} 
                   required 
                 />
               </div>
 
-              <button type="submit" class="button-outlined" style={{ width: '100%' }}>Submit Withdrawal Request</button>
+              <button type="submit" class="button-outlined" style={{ width: '100%', height: '42px', minHeight: '42px', fontSize: '14px', fontWeight: '600', borderRadius: '4px', cursor: 'pointer' }}>Submit Withdrawal Request</button>
             </form>
           </div>
         </div>
@@ -355,12 +359,12 @@ export default function Console() {
                     onChange={(e) => setNomineeName(e.target.value)} 
                     placeholder="Nominee Full Name" 
                     required 
-                    style={{ height: '32px', fontSize: '13px' }}
+                    style={{ height: '40px', minHeight: '40px', padding: '8px 12px', fontSize: '13px', boxSizing: 'border-box', width: '100%', borderRadius: '4px', border: '1px solid #d1d1d1' }}
                   />
                 </div>
                 <div class="row between" style={{ marginBottom: '10px' }}>
                   <div class="five columns">
-                    <select value={relation} onChange={(e) => setRelation(e.target.value)} style={{ width: '100%', height: '32px', fontSize: '13px' }}>
+                    <select value={relation} onChange={(e) => setRelation(e.target.value)} style={{ width: '100%', height: '40px', minHeight: '40px', padding: '8px 24px 8px 10px', fontSize: '13px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}>
                       <option value="Spouse">Spouse</option>
                       <option value="Father">Father</option>
                       <option value="Mother">Mother</option>
@@ -374,7 +378,7 @@ export default function Console() {
                       value={dob} 
                       onChange={(e) => setDob(e.target.value)} 
                       required 
-                      style={{ height: '32px', fontSize: '13px' }}
+                      style={{ height: '40px', minHeight: '40px', padding: '8px 10px', fontSize: '13px', boxSizing: 'border-box', width: '100%', borderRadius: '4px', border: '1px solid #d1d1d1' }}
                     />
                   </div>
                 </div>
@@ -384,10 +388,10 @@ export default function Console() {
                     type="number" 
                     value={share} 
                     onChange={(e) => setShare(Math.min(100, Math.max(1, parseInt(e.target.value) || 0)))} 
-                    style={{ height: '32px', fontSize: '13px' }}
+                    style={{ height: '40px', minHeight: '40px', padding: '8px 12px', fontSize: '13px', boxSizing: 'border-box', width: '100%', borderRadius: '4px', border: '1px solid #d1d1d1' }}
                   />
                 </div>
-                <button type="submit" style={{ width: '100%', padding: '6px 12px', fontSize: '13px' }}>Register Nominee</button>
+                <button type="submit" style={{ width: '100%', height: '40px', minHeight: '40px', padding: '6px 12px', fontSize: '13px', borderRadius: '4px', background: '#387ed1', color: '#fff', border: 'none', cursor: 'pointer' }}>Register Nominee</button>
               </form>
             </div>
           </div>

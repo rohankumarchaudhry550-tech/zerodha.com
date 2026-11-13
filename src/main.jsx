@@ -26,6 +26,18 @@ function ProtectedRoute({ children }) {
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
+function ExternalRedirect({ to }) {
+  React.useEffect(() => {
+    window.location.href = to;
+  }, [to]);
+  return (
+    <div style={{ textAlign: 'center', padding: '120px 20px', fontFamily: '"Inter", sans-serif' }}>
+      <p style={{ fontSize: '18px', color: '#555', marginBottom: '15px' }}>Redirecting to official Zerodha page...</p>
+      <a href={to} style={{ color: '#387ed1', fontSize: '15px', textDecoration: 'underline' }}>Click here if you are not redirected automatically</a>
+    </div>
+  );
+}
+
 function AppLayout() {
   const location = useLocation();
   // Hide main marketing Navbar/Footer inside the fullscreen Kite trading terminal and the Login page to look clean!
@@ -39,20 +51,20 @@ function AppLayout() {
       <div className={!hideHeaderFooter ? 'marketing-content' : ''} style={{ minHeight: hideHeaderFooter ? '100vh' : 'calc(100vh - 65px)' }}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/support" element={<Support />} />
+          <Route path="/products" element={<ExternalRedirect to="https://zerodha.com/products/" />} />
+          <Route path="/pricing" element={<ExternalRedirect to="https://zerodha.com/pricing/" />} />
+          <Route path="/about" element={<ExternalRedirect to="https://zerodha.com/about/" />} />
+          <Route path="/signup" element={<ExternalRedirect to="https://zerodha.com/open-account/" />} />
+          <Route path="/support" element={<ExternalRedirect to="https://support.zerodha.com/" />} />
           <Route path="/login" element={<Login />} />
           
           {/* Protected Trading Platforms */}
           <Route path="/kite" element={<ProtectedRoute><Kite /></ProtectedRoute>} />
           <Route path="/console" element={<ProtectedRoute><Console /></ProtectedRoute>} />
           <Route path="/coin" element={<ProtectedRoute><Coin /></ProtectedRoute>} />
-          <Route path="/varsity" element={<ProtectedRoute><Varsity /></ProtectedRoute>} />
-          <Route path="/kite-connect" element={<ProtectedRoute><KiteConnect /></ProtectedRoute>} />
-          <Route path="/sensibull" element={<ProtectedRoute><Sensibull /></ProtectedRoute>} />
+          <Route path="/varsity" element={<ExternalRedirect to="https://zerodha.com/varsity/" />} />
+          <Route path="/kite-connect" element={<ExternalRedirect to="https://kite.trade/" />} />
+          <Route path="/sensibull" element={<ExternalRedirect to="https://sensibull.com/" />} />
           <Route path="/streak" element={<ProtectedRoute><Streak /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
         </Routes>

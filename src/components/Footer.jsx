@@ -62,49 +62,49 @@ export default function Footer() {
               <div class="columns three">
                 <ul class="list-style">
                   <li class="nav-head">Account</li>
-                  <li><Link to="/signup">Open demat account</Link></li>
-                  <li><a href="https://zerodha.com/open-account/minor/">Minor demat account</a></li>
-                  <li><a href="https://zerodha.com/open-account/nri/">NRI demat account</a></li>
-                  <li><a href="https://zerodha.com/open-account/huf/">HUF demat account</a></li>
-                  <li><a href="https://zerodha.com/commodities/">Commodity</a></li>
-                  <li><a href="https://zerodha.com/dematerialise/">Dematerialisation</a></li>
-                  <li><a href="https://zerodha.com/fund-transfer/">Fund transfer</a></li>
-                  <li><a href="https://zerodha.com/mtf/">MTF</a></li>
+                  <li><a href="https://zerodha.com/open-account/" target="_blank" rel="noreferrer">Open demat account</a></li>
+                  <li><a href="https://zerodha.com/open-account/minor/" target="_blank" rel="noreferrer">Minor demat account</a></li>
+                  <li><a href="https://zerodha.com/open-account/nri/" target="_blank" rel="noreferrer">NRI demat account</a></li>
+                  <li><a href="https://zerodha.com/open-account/huf/" target="_blank" rel="noreferrer">HUF demat account</a></li>
+                  <li><a href="https://zerodha.com/commodities/" target="_blank" rel="noreferrer">Commodity</a></li>
+                  <li><a href="https://zerodha.com/dematerialise/" target="_blank" rel="noreferrer">Dematerialisation</a></li>
+                  <li><a href="https://zerodha.com/fund-transfer/" target="_blank" rel="noreferrer">Fund transfer</a></li>
+                  <li><a href="https://zerodha.com/mtf/" target="_blank" rel="noreferrer">MTF</a></li>
                 </ul>
               </div>
               <div class="columns three">
                 <ul class="list-style">
                   <li class="nav-head">Support</li>
-                  <li><Link to="/support">Contact us</Link></li>
-                  <li><Link to="/support">Support portal</Link></li>
+                  <li><a href="https://support.zerodha.com/" target="_blank" rel="noreferrer">Contact us</a></li>
+                  <li><a href="https://support.zerodha.com/" target="_blank" rel="noreferrer">Support portal</a></li>
                   <li><a target="_blank" rel="noreferrer" href="https://support.zerodha.com/category/your-zerodha-account/your-profile/ticket-creation/articles/how-do-i-create-a-ticket-at-zerodha">How to file a complaint?</a></li>
                   <li><a target="_blank" rel="noreferrer" href="https://support.zerodha.com/category/your-zerodha-account/your-profile/ticket-creation/articles/track-complaints-or-tickets">Status of your complaints</a></li>
-                  <li><Link to="/support">Circular / Bulletin</Link></li>
-                  <li><Link to="/support">Z-Connect blog</Link></li>
-                  <li><a href="https://zerodha.com/resources/">Downloads</a></li>
+                  <li><a href="https://zerodha.com/marketintel/bulletin/" target="_blank" rel="noreferrer">Circular / Bulletin</a></li>
+                  <li><a href="https://zerodha.com/z-connect/" target="_blank" rel="noreferrer">Z-Connect blog</a></li>
+                  <li><a href="https://zerodha.com/resources/" target="_blank" rel="noreferrer">Downloads</a></li>
                 </ul>
               </div>
               <div class="columns three">
                 <ul class="list-style">
                   <li class="nav-head">Company</li>
-                  <li><Link to="/about">About</Link></li>
-                  <li><a href="https://zerodha.com/about/philosophy/">Philosophy</a></li>
-                  <li><a href="https://zerodha.com/media/">Press &amp; media</a></li>
-                  <li><a href="https://careers.zerodha.com/">Careers</a></li>
-                  <li><a href="https://zerodha.com/cares/">Zerodha Cares (CSR)</a></li>
-                  <li><a href="https://zerodha.tech/">Zerodha.tech</a></li>
-                  <li><a href="https://zerodha.com/open-source/">Open source</a></li>
-                  <li><a href="https://zerodha.com/refer/">Referral program</a></li>
+                  <li><a href="https://zerodha.com/about/" target="_blank" rel="noreferrer">About</a></li>
+                  <li><a href="https://zerodha.com/about/philosophy/" target="_blank" rel="noreferrer">Philosophy</a></li>
+                  <li><a href="https://zerodha.com/media/" target="_blank" rel="noreferrer">Press &amp; media</a></li>
+                  <li><a href="https://careers.zerodha.com/" target="_blank" rel="noreferrer">Careers</a></li>
+                  <li><a href="https://zerodha.com/cares/" target="_blank" rel="noreferrer">Zerodha Cares (CSR)</a></li>
+                  <li><a href="https://zerodha.tech/" target="_blank" rel="noreferrer">Zerodha.tech</a></li>
+                  <li><a href="https://zerodha.com/open-source/" target="_blank" rel="noreferrer">Open source</a></li>
+                  <li><a href="https://zerodha.com/refer/" target="_blank" rel="noreferrer">Referral program</a></li>
                 </ul>
               </div>
               <div class="columns three">
                 <ul class="list-style">
                   <li class="nav-head">Quick links</li>
-                  <li><a href="https://zerodha.com/ipo/">Upcoming IPOs</a></li>
-                  <li><Link to="/pricing">Brokerage charges</Link></li>
-                  <li><a href="https://zerodha.com/marketintel/holiday-calendar/">Market holidays</a></li>
-                  <li><a href="https://zerodha.com/markets/calendar/">Economic calendar</a></li>
-                  <li><Link to="/pricing">Calculators</Link></li>
+                  <li><a href="https://zerodha.com/ipo/" target="_blank" rel="noreferrer">Upcoming IPOs</a></li>
+                  <li><a href="https://zerodha.com/pricing/" target="_blank" rel="noreferrer">Brokerage charges</a></li>
+                  <li><a href="https://zerodha.com/marketintel/holiday-calendar/" target="_blank" rel="noreferrer">Market holidays</a></li>
+                  <li><a href="https://zerodha.com/markets/calendar/" target="_blank" rel="noreferrer">Economic calendar</a></li>
+                  <li><a href="https://zerodha.com/brokerage-calculator/" target="_blank" rel="noreferrer">Calculators</a></li>
                   <li><Link to="/kite">Kite Platform</Link></li>
                   <li><Link to="/console">Console Portfolio</Link></li>
                   <li><Link to="/coin">Coin Mutual Funds</Link></li>
@@ -143,17 +143,17 @@ export default function Footer() {
         </div>
         <div class="footer-graveyard-links text-center">
           <ul>
-            <li><a rel="nofollow" href="https://nseindia.com">NSE</a></li>
-            <li><a rel="nofollow" href="https://www.bseindia.com/">BSE</a></li>
-            <li><a rel="nofollow" href="https://www.mcxindia.com/">MCX</a></li>
-            <li><a rel="nofollow" href="https://mseindia.com/">MSEI</a></li>
-            <li><a href="https://zerodha.com/terms-and-conditions/">Terms &amp; conditions</a></li>
-            <li><a href="https://zerodha.com/policies-and-procedures/">Policies &amp; procedures</a></li>
-            <li><a href="https://zerodha.com/privacy-policy/">Privacy policy</a></li>
-            <li><a href="https://zerodha.com/disclosure/">Disclosure</a></li>
-            <li><a href="https://zerodha.com/investor-attention/">For investor's attention</a></li>
-            <li><a href="https://zerodha.com/tos/investor-charter/">Investor charter</a></li>
-            <li><a href="https://zerodha.com/sitemap/">Sitemap</a></li>
+            <li><a rel="nofollow" target="_blank" href="https://nseindia.com">NSE</a></li>
+            <li><a rel="nofollow" target="_blank" href="https://www.bseindia.com/">BSE</a></li>
+            <li><a rel="nofollow" target="_blank" href="https://www.mcxindia.com/">MCX</a></li>
+            <li><a rel="nofollow" target="_blank" href="https://mseindia.com/">MSEI</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/terms-and-conditions/">Terms &amp; conditions</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/policies-and-procedures/">Policies &amp; procedures</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/privacy-policy/">Privacy policy</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/disclosure/">Disclosure</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/investor-attention/">For investor's attention</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/tos/investor-charter/">Investor charter</a></li>
+            <li><a target="_blank" rel="noreferrer" href="https://zerodha.com/sitemap/">Sitemap</a></li>
           </ul>
         </div>
       </div>

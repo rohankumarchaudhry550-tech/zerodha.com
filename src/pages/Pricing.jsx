@@ -112,8 +112,12 @@ export default function Pricing() {
             {/* Form inputs */}
             <div class="five columns console-card" style={{ background: '#fff' }}>
               <div style={{ marginBottom: '15px' }}>
-                <label><strong>Segment / Trade Type</strong></label>
-                <select value={calcType} onChange={(e) => setCalcType(e.target.value)} style={{ width: '100%', height: '40px', marginTop: '5px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}><strong>Segment / Trade Type</strong></label>
+                <select 
+                  value={calcType} 
+                  onChange={(e) => setCalcType(e.target.value)} 
+                  style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
                   <option value="EQUITY_DELIVERY">Equity Delivery (₹0 Brokerage)</option>
                   <option value="EQUITY_INTRADAY">Equity Intraday</option>
                   <option value="FO_FUTURES">Equity Futures (F&amp;O)</option>
@@ -123,18 +127,33 @@ export default function Pricing() {
 
               <div className="row between" style={{ marginBottom: '15px' }}>
                 <div className="six columns">
-                  <label>Buy Price (₹)</label>
-                  <input type="number" value={buyPrice} onChange={(e) => setBuyPrice(Math.max(0.1, parseFloat(e.target.value) || 0))} style={{ height: '35px', marginTop: '5px' }} />
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Buy Price (₹)</label>
+                  <input 
+                    type="number" 
+                    value={buyPrice} 
+                    onChange={(e) => setBuyPrice(Math.max(0.1, parseFloat(e.target.value) || 0))} 
+                    style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', width: '100%' }} 
+                  />
                 </div>
                 <div className="six columns">
-                  <label>Sell Price (₹)</label>
-                  <input type="number" value={sellPrice} onChange={(e) => setSellPrice(Math.max(0.1, parseFloat(e.target.value) || 0))} style={{ height: '35px', marginTop: '5px' }} />
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Sell Price (₹)</label>
+                  <input 
+                    type="number" 
+                    value={sellPrice} 
+                    onChange={(e) => setSellPrice(Math.max(0.1, parseFloat(e.target.value) || 0))} 
+                    style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', width: '100%' }} 
+                  />
                 </div>
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label>Quantity</label>
-                <input type="number" value={qty} onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 0))} style={{ height: '35px', marginTop: '5px' }} />
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Quantity</label>
+                <input 
+                  type="number" 
+                  value={qty} 
+                  onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 0))} 
+                  style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', width: '100%' }} 
+                />
               </div>
             </div>
 

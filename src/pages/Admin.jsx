@@ -55,8 +55,12 @@ export default function Admin() {
 
             <form onSubmit={saveAdminSettings}>
               <div style={{ marginBottom: '15px' }}>
-                <label>Intraday MIS Leverage Multiplier</label>
-                <select value={leverage} onChange={(e) => setLeverage(parseInt(e.target.value))} style={{ width: '100%', height: '35px', marginTop: '5px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Intraday MIS Leverage Multiplier</label>
+                <select 
+                  value={leverage} 
+                  onChange={(e) => setLeverage(parseInt(e.target.value))} 
+                  style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
                   <option value={5}>5x Leverage (NSE Standard)</option>
                   <option value={10}>10x Leverage (High Risk)</option>
                   <option value={2}>2x Leverage (Conservative)</option>

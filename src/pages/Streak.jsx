@@ -96,8 +96,12 @@ export default function Streak() {
             <form onSubmit={(e) => { e.preventDefault(); runBacktest(); }}>
               {/* Asset selection */}
               <div style={{ marginBottom: '15px' }}>
-                <label>Target Asset Symbol</label>
-                <select value={selectedStock} onChange={(e) => { setSelectedStock(e.target.value); setBacktestResult(null); }} style={{ width: '100%', height: '35px', marginTop: '5px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Target Asset Symbol</label>
+                <select 
+                  value={selectedStock} 
+                  onChange={(e) => { setSelectedStock(e.target.value); setBacktestResult(null); }} 
+                  style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                >
                   <option value="RELIANCE">RELIANCE (NSE)</option>
                   <option value="TCS">TCS (NSE)</option>
                   <option value="HDFCBANK">HDFCBANK (NSE)</option>
@@ -108,8 +112,12 @@ export default function Streak() {
               {/* Indicator selection */}
               <div class="row between" style={{ marginBottom: '20px' }}>
                 <div class="four columns">
-                  <label>Indicator</label>
-                  <select value={indicator} onChange={(e) => { setIndicator(e.target.value); setBacktestResult(null); }} style={{ width: '100%', height: '35px', marginTop: '5px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Indicator</label>
+                  <select 
+                    value={indicator} 
+                    onChange={(e) => { setIndicator(e.target.value); setBacktestResult(null); }} 
+                    style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                  >
                     <option value="RSI(14)">RSI (14)</option>
                     <option value="EMA(9)">EMA (9)</option>
                     <option value="EMA(21)">EMA (21)</option>
@@ -117,8 +125,12 @@ export default function Streak() {
                   </select>
                 </div>
                 <div class="four columns">
-                  <label>Condition</label>
-                  <select value={compareOperator} onChange={(e) => { setCompareOperator(e.target.value); setBacktestResult(null); }} style={{ width: '100%', height: '35px', marginTop: '5px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Condition</label>
+                  <select 
+                    value={compareOperator} 
+                    onChange={(e) => { setCompareOperator(e.target.value); setBacktestResult(null); }} 
+                    style={{ width: '100%', height: '42px', minHeight: '42px', padding: '8px 30px 8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', backgroundColor: '#fff', cursor: 'pointer' }}
+                  >
                     <option value="crosses below">Crosses Below</option>
                     <option value="crosses above">Crosses Above</option>
                     <option value="is greater than">Is Greater Than</option>
@@ -126,12 +138,12 @@ export default function Streak() {
                   </select>
                 </div>
                 <div class="four columns">
-                  <label>Target / Value</label>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: '500' }}>Target / Value</label>
                   <input 
                     type="text" 
                     value={targetVal} 
                     onChange={(e) => { setTargetVal(e.target.value); setBacktestResult(null); }}
-                    style={{ height: '35px', marginTop: '5px' }} 
+                    style={{ height: '42px', minHeight: '42px', padding: '8px 12px', fontSize: '14px', boxSizing: 'border-box', borderRadius: '4px', border: '1px solid #d1d1d1', width: '100%' }} 
                     placeholder="e.g. 30" 
                     required 
                   />

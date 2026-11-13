@@ -46,20 +46,20 @@ export default function Navbar() {
                 {isAuthenticated ? (
                   <Link to="/kite" id="nav_acop" style={{ color: '#fff' }}>Kite Trading</Link>
                 ) : (
-                  <NavLink to="/signup" className={({ isActive }) => isActive ? 'active-link' : ''}>Signup</NavLink>
+                  <a href="https://zerodha.com/open-account/" target="_blank" rel="noreferrer">Signup</a>
                 )}
               </li>
               <li class="hide-on-small">
-                <NavLink to="/about" className={({ isActive }) => isActive ? 'active-link' : ''}>About</NavLink>
+                <a href="https://zerodha.com/about/" target="_blank" rel="noreferrer">About</a>
               </li>
               <li class="hide-on-small">
-                <NavLink to="/products" className={({ isActive }) => isActive ? 'active-link' : ''}>Products</NavLink>
+                <a href="https://zerodha.com/products/" target="_blank" rel="noreferrer">Products</a>
               </li>
               <li class="hide-on-small">
-                <NavLink to="/pricing" className={({ isActive }) => isActive ? 'active-link' : ''}>Pricing</NavLink>
+                <a href="https://zerodha.com/pricing/" target="_blank" rel="noreferrer">Pricing</a>
               </li>
               <li class="hide-on-small">
-                <NavLink to="/support" className={({ isActive }) => isActive ? 'active-link' : ''}>Support</NavLink>
+                <a href="https://support.zerodha.com/" target="_blank" rel="noreferrer">Support</a>
               </li>
 
               {isAuthenticated && (
@@ -92,12 +92,12 @@ export default function Navbar() {
                     {isAuthenticated ? (
                       <li><Link to="/kite">Kite Platform</Link></li>
                     ) : (
-                      <li><Link to="/signup">Signup</Link></li>
+                      <li><a href="https://zerodha.com/open-account/" target="_blank" rel="noreferrer">Signup</a></li>
                     )}
-                    <li><Link to="/about">About</Link></li>
-                    <li><Link to="/products">Products</Link></li>
-                    <li><Link to="/pricing">Pricing</Link></li>
-                    <li><Link to="/support">Support</Link></li>
+                    <li><a href="https://zerodha.com/about/" target="_blank" rel="noreferrer">About</a></li>
+                    <li><a href="https://zerodha.com/products/" target="_blank" rel="noreferrer">Products</a></li>
+                    <li><a href="https://zerodha.com/pricing/" target="_blank" rel="noreferrer">Pricing</a></li>
+                    <li><a href="https://support.zerodha.com/" target="_blank" rel="noreferrer">Support</a></li>
                     {isAuthenticated ? (
                       <li><a href="#logout" onClick={(e) => { e.preventDefault(); logout(); }}>Logout</a></li>
                     ) : (
@@ -131,37 +131,37 @@ export default function Navbar() {
                       </Link>
                     </div>
                     <div class="three columns">
-                      <Link class="text-center" to="/varsity">
+                      <a class="text-center" href="https://zerodha.com/varsity/" target="_blank" rel="noreferrer">
                         <img src="/static/images/products/varsity.png" style={{ maxHeight: '35px' }} alt="Varsity" /><br />
                         <span><strong>Varsity</strong></span>
                         <br class="hide-on-small" />
                         <span class="text-light-grey text-12 hide-on-small">Market education</span>
-                      </Link>
+                      </a>
                     </div>
                   </div>
 
                   <div class="row between v-align products-list" style={{ padding: '0 20px 20px 20px', borderTop: 'none' }}>
                     <div class="three columns">
-                      <Link class="text-center" to="/kite-connect">
+                      <a class="text-center" href="https://kite.trade/" target="_blank" rel="noreferrer">
                         <img src="/static/images/products/kite-connect.svg" style={{ maxHeight: '30px' }} alt="Kite Connect" /><br />
                         <span><strong>Kite Connect API</strong></span>
-                      </Link>
+                      </a>
                     </div>
                     <div class="three columns">
-                      <Link class="text-center" to="/sensibull">
+                      <a class="text-center" href="https://sensibull.com/" target="_blank" rel="noreferrer">
                         <span style={{ fontSize: '24px' }}>🐂</span><br />
                         <span><strong>Sensibull</strong></span>
                         <br />
                         <span class="text-light-grey text-12 hide-on-small">Options strategy</span>
-                      </Link>
+                      </a>
                     </div>
                     <div class="three columns">
-                      <Link class="text-center" to="/streak">
+                      <a class="text-center" href="https://streak.tech/" target="_blank" rel="noreferrer">
                         <span style={{ fontSize: '24px' }}>⚡</span><br />
                         <span><strong>Streak</strong></span>
                         <br />
                         <span class="text-light-grey text-12 hide-on-small">Algo backtesting</span>
-                      </Link>
+                      </a>
                     </div>
                     <div class="three columns">
                       <Link class="text-center" to="/admin">
@@ -177,8 +177,8 @@ export default function Navbar() {
                         <div class="row between">
                           <div class="six columns">
                             <p><strong>Utilities</strong></p>
-                            <Link to="/pricing">Brokerage Calculator</Link>
-                            <Link to="/kite">Margin Calculator</Link>
+                            <a href="https://zerodha.com/brokerage-calculator/" target="_blank" rel="noreferrer">Brokerage Calculator</a>
+                            <a href="https://zerodha.com/margin-calculator/" target="_blank" rel="noreferrer">Margin Calculator</a>
                             <a href="https://zerodha.com/calculators/sip-calculator/" target="_blank" rel="noreferrer">SIP Calculator</a>
                           </div>
                           <div class="six columns">
