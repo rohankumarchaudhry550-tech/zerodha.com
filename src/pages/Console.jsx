@@ -6,12 +6,13 @@ import { Landmark, ArrowUpRight, ArrowDownRight, Users, Plus, ShieldAlert } from
 const COLORS = ['#387ed1', '#00C49F', '#FFBB28', '#FF8042', '#9c27b0', '#00bcd4', '#4caf50'];
 
 export default function Console() {
-  const { margin, holdings, depositCash, withdrawCash, stockPrices } = useContext(AppContext);
+  const { margin, holdings, depositCash, withdrawCash, stockPrices, liveMarketConnected } = useContext(AppContext);
 
   // Cash forms state
   const [depositAmt, setDepositAmt] = useState(10000);
   const [withdrawAmt, setWithdrawAmt] = useState(5000);
   const [payMethod, setPayMethod] = useState('UPI');
+  const [hoveredSlice, setHoveredSlice] = useState(null);
 
   // Nominee state
   const [nominees, setNominees] = useState([
@@ -72,7 +73,24 @@ export default function Console() {
         <div className="console-card" style={{ background: '#fff' }}>
           <div class="row between v-align">
             <div>
-              <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#888', letterSpacing: '1px' }}>Console Dashboard</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '12px', textTransform: 'uppercase', color: '#888', letterSpacing: '1px' }}>Console Dashboard</span>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  background: liveMarketConnected ? '#e8f5e9' : '#fff3e0',
+                  color: liveMarketConnected ? '#2e7d32' : '#e65100',
+                  padding: '2px 8px',
+                  borderRadius: '10px',
+                  fontSize: '10px',
+                  fontWeight: '700',
+                  border: `1px solid ${liveMarketConnected ? '#c8e6c9' : '#ffe0b2'}`
+                }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: liveMarketConnected ? '#4caf50' : '#ff9800' }}></span>
+                  {liveMarketConnected ? 'Live Market Feed Active' : 'Connecting Feed...'}
+                </span>
+              </div>
               <h2 style={{ margin: '5px 0 0 0' }}>Demat Portfolio Backoffice</h2>
             </div>
             <div style={{ display: 'flex', gap: '30px' }}>
@@ -90,10 +108,28 @@ export default function Console() {
 
         {/* Portfolio PieChart & Ledger Summary */}
         <div class="row between">
-          <div class="seven columns console-card" style={{ background: '#fff', height: '400px', display: 'flex', flexDirection: 'column' }}>
-            <h3 style={{ margin: 0, marginBottom: '10px' }}>Portfolio Distribution</h3>
-            <p class="text-grey" style={{ fontSize: '13px', margin: 0 }}>Asset allocation representation across active holdings.</p>
-            <hr />
+          <div class="seven columns console-card" style={{ background: '#fff', height: '420px', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '15px' }}>Portfolio Distribution</h3>
+                <p class="text-grey" style={{ fontSize: '12px', margin: '2px 0 0 0' }}>Asset allocation representation across active holdings.</p>
+              </div>
+              <div style={{
+                fontSize: '11px',
+                padding: '3px 10px',
+                borderRadius: '4px',
+                background: hoveredSlice ? '#e3f2fd' : '#f5f5f5',
+                color: hoveredSlice ? '#1565c0' : '#666',
+                fontWeight: '600',
+                transition: 'all 0.2s ease'
+              }}>
+                {hoveredSlice 
+                  ? `${hoveredSlice.name} (${hoveredSlice.qty} Shares) • Valuation: ₹${hoveredSlice.value.toLocaleString()}`
+                  : `Total ${totalQty} Shares • 100% Demat Allocation`}
+              </div>
+            </div>
+            <hr style={{ margin: '8px 0 12px 0' }} />
+
             <div style={{ flex: 1, minHeight: '260px', position: 'relative' }}>
               {chartData.length > 0 ? (
                 <>
@@ -102,31 +138,40 @@ export default function Console() {
                       <Pie
                         data={chartData}
                         cx="50%"
-                        cy="45%"
-                        innerRadius={68}
-                        outerRadius={105}
+                        cy="46%"
+                        innerRadius={72}
+                        outerRadius={108}
                         paddingAngle={2}
                         dataKey="value"
+                        onMouseEnter={(data) => setHoveredSlice(data)}
+                        onMouseLeave={() => setHoveredSlice(null)}
                       >
                         {chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={COLORS[index % COLORS.length]} 
+                            stroke="#fff" 
+                            strokeWidth={hoveredSlice?.name === entry.name ? 3 : 1}
+                            style={{ cursor: 'pointer', transition: 'stroke 0.2s ease' }}
+                          />
                         ))}
                       </Pie>
                       <Tooltip 
+                        position={{ x: 10, y: 10 }}
                         content={({ active, payload }) => {
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             return (
-                              <div style={{ background: '#fff', border: '1px solid #ddd', padding: '10px 14px', borderRadius: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}>
-                                <div style={{ fontWeight: '700', fontSize: '13px', color: '#333', marginBottom: '4px' }}>
-                                  {data.name} <span style={{ fontWeight: 'normal', color: '#777', fontSize: '11px' }}>({data.fullName || 'Holding'})</span>
-                                </div>
-                                <div style={{ color: '#387ed1', fontWeight: 'bold', fontSize: '14px', marginBottom: '4px' }}>
-                                  Share Count: {data.qty} shares
-                                </div>
-                                <div style={{ color: '#555' }}>
-                                  Valuation: <strong>₹{data.value.toLocaleString([], { minimumFractionDigits: 2 })}</strong>
-                                </div>
+                              <div style={{ 
+                                background: 'rgba(255, 255, 255, 0.96)', 
+                                border: '1px solid #387ed1', 
+                                padding: '6px 12px', 
+                                borderRadius: '4px', 
+                                boxShadow: '0 4px 12px rgba(56,126,209,0.15)', 
+                                fontSize: '11.5px',
+                                pointerEvents: 'none'
+                              }}>
+                                <span style={{ fontWeight: '700', color: '#222' }}>{data.name}</span>: <strong style={{ color: '#387ed1' }}>{data.qty} shares</strong> (₹{data.value.toLocaleString([], { minimumFractionDigits: 2 })})
                               </div>
                             );
                           }
@@ -138,31 +183,41 @@ export default function Console() {
                         height={36} 
                         formatter={(val) => {
                           const hold = holdings.find(h => h.symbol === val);
-                          return `${val} (${hold ? hold.qty : 0} shares)`;
+                          return `${val} (${hold ? hold.qty : 0} shares) - 100% Demat`;
                         }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
 
-                  {/* Centered Donut Circle Metric showing exact Share Count & Live CMP */}
+                  {/* Centered Donut Circle Metric - IMMUNE TO OVERLAPPING */}
                   <div style={{
                     position: 'absolute',
-                    top: '45%',
+                    top: '46%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     textAlign: 'center',
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    zIndex: 2,
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '50%',
+                    width: '124px',
+                    height: '124px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.06)'
                   }}>
-                    <span style={{ fontSize: '10px', textTransform: 'uppercase', color: '#888', letterSpacing: '1px', fontWeight: '700' }}>
+                    <span style={{ fontSize: '9.5px', textTransform: 'uppercase', color: '#888', letterSpacing: '0.8px', fontWeight: '700' }}>
                       Share Count
                     </span>
                     <div style={{ fontSize: '28px', fontWeight: '800', color: '#387ed1', lineHeight: '1.1' }}>
                       {totalQty}
                     </div>
-                    <span style={{ fontSize: '11px', color: '#555', fontWeight: '600' }}>
-                      {holdings[0]?.symbol || 'Shares'}
+                    <span style={{ fontSize: '11.5px', color: '#333', fontWeight: '700' }}>
+                      {holdings[0]?.symbol || 'LTIM'}
                     </span>
-                    <div style={{ fontSize: '10.5px', color: '#2e7d32', fontWeight: '700', marginTop: '2px' }}>
+                    <div style={{ fontSize: '11px', color: '#2e7d32', fontWeight: '700', marginTop: '2px' }}>
                       ₹{(stockPrices?.[holdings[0]?.symbol] || holdings[0]?.currentPrice || 0).toFixed(2)}
                     </div>
                   </div>

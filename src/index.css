@@ -70,16 +70,14 @@
 
 /* Action hover buttons in watchlist */
 .watchlist-actions {
-  display: none;
-  gap: 8px;
-}
-
-.watchlist-item:hover .watchlist-actions {
   display: flex;
+  gap: 6px;
+  align-items: center;
 }
 
-.watchlist-item:hover .watchlist-price {
-  display: none;
+.watchlist-price {
+  display: flex;
+  transition: opacity 0.15s ease;
 }
 
 .btn-buy {

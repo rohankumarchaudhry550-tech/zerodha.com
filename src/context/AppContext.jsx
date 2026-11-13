@@ -3,7 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 export const AppContext = createContext();
 
 const initialHoldings = [
-  { symbol: 'LTIM', name: 'LTIMindtree Limited', qty: 89, buyPrice: 3580.0, currentPrice: 4304.50 }
+  { symbol: 'LTIM', name: 'LTIMindtree Limited', qty: 89, buyPrice: 3580.0, currentPrice: 4504.00 }
 ];
 
 const initialMutualFunds = [
@@ -14,39 +14,39 @@ const initialMutualFunds = [
 ];
 
 export const basePrices = {
-  LTIM: 4224.80,     // Prev Close (~+1.89% day gain to 4304.50)
-  RELIANCE: 1330.00, // Prev Close (+0.69%)
-  TCS: 2438.00,      // Prev Close (+0.59%)
-  HDFCBANK: 802.00,  // Prev Close (+0.82%)
-  INFY: 1510.00,     // Prev Close (+0.95%)
-  ITC: 430.50,       // Prev Close (+0.53%)
-  SBIN: 810.00,      // Prev Close (+0.64%)
-  NIFTY50: 25180.00, // Prev Close (+0.27%)
-  SENSEX: 81750.00   // Prev Close (+0.26%)
+  LTIM: 4504.00,     // Prev Close NSE
+  RELIANCE: 1335.40, // Prev Close NSE
+  TCS: 2472.10,      // Prev Close NSE
+  HDFCBANK: 806.60,  // Prev Close NSE
+  INFY: 1155.00,     // Prev Close NSE
+  ITC: 285.00,       // Prev Close NSE
+  SBIN: 1061.20,     // Prev Close NSE
+  NIFTY50: 25044.70, // Prev Close NSE
+  SENSEX: 81106.60   // Prev Close BSE
 };
 
 export const stockStats = {
-  LTIM: { high52: 6430.00, low52: 3528.00, open: 4235.00, high: 4338.00, low: 4215.00, volume: 842190, name: 'LTIMindtree Limited', lotSize: 1 },
-  RELIANCE: { high52: 1608.80, low52: 1120.00, open: 1332.00, high: 1345.50, low: 1328.00, volume: 4950210, name: 'Reliance Industries Limited', lotSize: 1 },
-  TCS: { high52: 4592.25, low52: 2310.00, open: 2440.00, high: 2465.00, low: 2430.00, volume: 1845300, name: 'Tata Consultancy Services', lotSize: 1 },
-  HDFCBANK: { high52: 1794.00, low52: 730.00, open: 804.00, high: 812.50, low: 801.00, volume: 6890400, name: 'HDFC Bank Limited', lotSize: 1 },
-  INFY: { high52: 1991.45, low52: 1358.00, open: 1515.00, high: 1530.00, low: 1508.00, volume: 3210400, name: 'Infosys Limited', lotSize: 1 },
-  ITC: { high52: 520.00, low52: 399.00, open: 431.00, high: 435.50, low: 429.50, volume: 5612000, name: 'ITC Limited', lotSize: 1 },
-  SBIN: { high52: 912.00, low52: 543.00, open: 812.00, high: 820.00, low: 808.50, volume: 4120300, name: 'State Bank of India', lotSize: 1 },
-  NIFTY50: { high52: 26277.35, low52: 21281.45, open: 25200.00, high: 25280.00, low: 25160.00, volume: 0, name: 'Nifty 50 Index', lotSize: 50 },
-  SENSEX: { high52: 85978.25, low52: 70001.20, open: 81800.00, high: 82100.00, low: 81680.00, volume: 0, name: 'BSE SENSEX Index', lotSize: 10 }
+  LTIM: { high52: 6429.50, low52: 3802.00, open: 4580.00, high: 4655.00, low: 4486.50, volume: 1245000, name: 'LTIMindtree Limited', lotSize: 1 },
+  RELIANCE: { high52: 1611.80, low52: 1152.20, open: 1332.00, high: 1342.50, low: 1330.90, volume: 4950210, name: 'Reliance Industries Limited', lotSize: 1 },
+  TCS: { high52: 3350.00, low52: 1976.80, open: 2440.00, high: 2472.00, low: 2422.50, volume: 1845300, name: 'Tata Consultancy Services', lotSize: 1 },
+  HDFCBANK: { high52: 1017.50, low52: 669.20, open: 804.00, high: 815.00, low: 798.65, volume: 6890400, name: 'HDFC Bank Limited', lotSize: 1 },
+  INFY: { high52: 1728.00, low52: 980.40, open: 1154.00, high: 1154.80, low: 1134.80, volume: 3210400, name: 'Infosys Limited', lotSize: 1 },
+  ITC: { high52: 412.00, low52: 252.80, open: 288.00, high: 290.25, low: 283.65, volume: 5612000, name: 'ITC Limited', lotSize: 1 },
+  SBIN: { high52: 1234.70, low52: 933.90, open: 1062.00, high: 1089.00, low: 1058.50, volume: 4120300, name: 'State Bank of India', lotSize: 1 },
+  NIFTY50: { high52: 26277.35, low52: 21281.45, open: 25150.00, high: 25340.00, low: 25020.00, volume: 0, name: 'Nifty 50 Index', lotSize: 50 },
+  SENSEX: { high52: 85978.25, low52: 70001.20, open: 81400.00, high: 82050.00, low: 81000.00, volume: 0, name: 'BSE SENSEX Index', lotSize: 10 }
 };
 
 const initialStockPrices = {
-  LTIM: 4304.50,
-  RELIANCE: 1339.20,
-  TCS: 2452.40,
-  HDFCBANK: 808.60,
-  INFY: 1524.30,
-  ITC: 432.80,
-  SBIN: 815.20,
-  NIFTY50: 25248.50,
-  SENSEX: 81960.00
+  LTIM: 4504.00,
+  RELIANCE: 1339.70,
+  TCS: 2442.40,
+  HDFCBANK: 812.30,
+  INFY: 1151.20,
+  ITC: 284.05,
+  SBIN: 1086.50,
+  NIFTY50: 25299.35,
+  SENSEX: 81911.01
 };
 
 export const AppProvider = ({ children }) => {
@@ -63,7 +63,7 @@ export const AppProvider = ({ children }) => {
     { id: 'ORD001', symbol: 'LTIM', type: 'BUY', product: 'CNC', qty: 89, price: 3580.0, status: 'COMPLETE', time: '09:15:24 AM' }
   ]);
   const [positions, setPositions] = useState([
-    { symbol: 'LTIM', type: 'CNC', qty: 89, buyPrice: 3580.0, currentPrice: 4304.50 }
+    { symbol: 'LTIM', type: 'CNC', qty: 89, buyPrice: 3580.0, currentPrice: 4504.00 }
   ]);
   const [mutualFunds, setMutualFunds] = useState(initialMutualFunds);
   const [mfHoldings, setMfHoldings] = useState([
@@ -95,6 +95,79 @@ export const AppProvider = ({ children }) => {
   // Real-time stock prices & tick engine
   const [stockPrices, setStockPrices] = useState(initialStockPrices);
   const [marketStats, setMarketStats] = useState(stockStats);
+  const [liveMarketConnected, setLiveMarketConnected] = useState(false);
+  const [lastMarketUpdate, setLastMarketUpdate] = useState(null);
+
+  // Direct Live Market Data Connector (NSE/BSE)
+  useEffect(() => {
+    let isMounted = true;
+    const fetchMarketFeed = async () => {
+      try {
+        const res = await fetch('/api/market-quotes');
+        if (res.ok) {
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            const data = await res.json();
+            if (data && data.quotes && isMounted) {
+              setLiveMarketConnected(true);
+              setLastMarketUpdate(new Date());
+
+              // Synchronize live prices from actual market
+              setStockPrices(prev => {
+                const updated = { ...prev };
+                if (data.quotes.LTIM?.price) updated.LTIM = data.quotes.LTIM.price;
+                if (data.quotes.RELIANCE?.price) updated.RELIANCE = data.quotes.RELIANCE.price;
+                if (data.quotes.TCS?.price) updated.TCS = data.quotes.TCS.price;
+                if (data.quotes.HDFCBANK?.price) updated.HDFCBANK = data.quotes.HDFCBANK.price;
+                if (data.quotes.INFY?.price) updated.INFY = data.quotes.INFY.price;
+                if (data.quotes.ITC?.price) updated.ITC = data.quotes.ITC.price;
+                if (data.quotes.SBIN?.price) updated.SBIN = data.quotes.SBIN.price;
+                if (data.quotes['NIFTY 50']?.price) updated.NIFTY50 = data.quotes['NIFTY 50'].price;
+                if (data.quotes['SENSEX']?.price) updated.SENSEX = data.quotes['SENSEX'].price;
+                return updated;
+              });
+
+              // Synchronize High / Low / 52W from live market
+              setMarketStats(prev => {
+                const updated = { ...prev };
+                ['LTIM', 'RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'ITC', 'SBIN'].forEach(s => {
+                  const q = data.quotes[s];
+                  if (q && updated[s]) {
+                    updated[s] = {
+                      ...updated[s],
+                      high: q.high || updated[s].high,
+                      low: q.low || updated[s].low,
+                      open: q.open || updated[s].open,
+                      high52: q.yearHigh || updated[s].high52,
+                      low52: q.yearLow || updated[s].low52
+                    };
+                  }
+                });
+                if (data.quotes['NIFTY 50'] && updated.NIFTY50) {
+                  const n = data.quotes['NIFTY 50'];
+                  updated.NIFTY50 = { ...updated.NIFTY50, high: n.high || updated.NIFTY50.high, low: n.low || updated.NIFTY50.low };
+                }
+                if (data.quotes['SENSEX'] && updated.SENSEX) {
+                  const s = data.quotes['SENSEX'];
+                  updated.SENSEX = { ...updated.SENSEX, high: s.high || updated.SENSEX.high, low: s.low || updated.SENSEX.low };
+                }
+                return updated;
+              });
+            }
+          }
+        }
+      } catch (err) {
+        // Fallback gracefully to realistic tick engine
+      }
+    };
+
+    fetchMarketFeed();
+    const pollInterval = setInterval(fetchMarketFeed, 4000);
+    return () => {
+      isMounted = false;
+      clearInterval(pollInterval);
+    };
+  }, []);
 
   // Ultra-realistic live tick simulation matching NSE tick size (₹0.05)
   useEffect(() => {
@@ -307,7 +380,8 @@ export const AppProvider = ({ children }) => {
     <AppContext.Provider value={{
       isAuthenticated, user, login, logout, validateCredentials, verifyOtpAndLogin,
       margin, holdings, orders, positions, mutualFunds, mfHoldings, kyc, setKyc, tickets, setTickets, stockPrices,
-      marketStats, basePrices, executeOrder, depositCash, withdrawCash, setHoldings, setMfHoldings
+      marketStats, basePrices, executeOrder, depositCash, withdrawCash, setHoldings, setMfHoldings,
+      liveMarketConnected, lastMarketUpdate
     }}>
       {children}
     </AppContext.Provider>

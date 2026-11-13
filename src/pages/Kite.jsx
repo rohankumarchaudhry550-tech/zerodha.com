@@ -87,7 +87,8 @@ const playSuccessSound = () => {
 
 export default function Kite() {
   const { 
-    margin, holdings, orders, positions, executeOrder, stockPrices, marketStats: ctxMarketStats, basePrices: ctxBasePrices, user, logout, depositCash, withdrawCash
+    margin, holdings, orders, positions, executeOrder, stockPrices, marketStats: ctxMarketStats, basePrices: ctxBasePrices, user, logout, depositCash, withdrawCash,
+    liveMarketConnected
   } = useContext(AppContext);
 
   const basePrices = ctxBasePrices || defaultBasePrices;
@@ -133,6 +134,7 @@ export default function Kite() {
   const [chartType, setChartType] = useState('candle'); // candle / area
   const [chartIndicator, setChartIndicator] = useState('None');
   const [activeDrawingTool, setActiveDrawingTool] = useState('crosshair');
+  const [hoveredCandle, setHoveredCandle] = useState(null);
 
   // Watchlist searches & filters
   const [holdingsSearch, setHoldingsSearch] = useState('');
@@ -446,78 +448,110 @@ export default function Kite() {
     const lastY = last ? getY(last.close) : 0;
     const lastColor = last && last.close >= last.open ? '#26a69a' : '#ef5350';
 
+    const activeCandle = hoveredCandle || last || { open: 0, high: 0, low: 0, close: 0, volume: 0, date: '' };
+    const candleIsUp = activeCandle.close >= activeCandle.open;
+
     return (
-      <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: '100%', overflow: 'visible' }}>
-        {/* Horizontal Grid lines & Price Labels */}
-        {priceLevels.map((lvl, idx) => {
-          const y = getY(lvl);
-          return (
-            <g key={idx}>
-              <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="#f0f0f0" strokeDasharray="3 3" />
-              <text x={width - padding.right + 6} y={y + 3.5} fill="#888" fontSize="10" fontFamily="Inter, sans-serif">
-                ₹{lvl.toFixed(2)}
-              </text>
-            </g>
-          );
-        })}
+      <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+        {/* TradingView Live OHLC Bar */}
+        <div style={{ 
+          display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '14px', 
+          fontSize: '11px', color: '#555', padding: '4px 10px', background: '#fafafa', 
+          borderBottom: '1px solid #f0f0f0', borderRadius: '4px 4px 0 0' 
+        }}>
+          <span style={{ fontWeight: '700', color: '#222' }}>{selectedStock} • {chartTimeframe}</span>
+          <span>O: <strong style={{ color: '#333' }}>₹{activeCandle.open.toFixed(2)}</strong></span>
+          <span>H: <strong style={{ color: '#26a69a' }}>₹{activeCandle.high.toFixed(2)}</strong></span>
+          <span>L: <strong style={{ color: '#ef5350' }}>₹{activeCandle.low.toFixed(2)}</strong></span>
+          <span>C: <strong style={{ color: candleIsUp ? '#26a69a' : '#ef5350' }}>₹{activeCandle.close.toFixed(2)}</strong></span>
+          <span>Chg: <strong style={{ color: candleIsUp ? '#26a69a' : '#ef5350' }}>{candleIsUp ? '+' : ''}{(activeCandle.close - activeCandle.open).toFixed(2)}</strong></span>
+          <span>Vol: <strong style={{ color: '#666' }}>{activeCandle.volume.toLocaleString()}</strong></span>
+          <span style={{ fontSize: '10.5px', color: '#888', marginLeft: 'auto' }}>{activeCandle.date}</span>
+        </div>
 
-        {/* EMA Line overlay */}
-        {chartIndicator === 'EMA' && emaPoints.length > 1 && (
-          <polyline
-            fill="none"
-            stroke="#ff9800"
-            strokeWidth="1.5"
-            points={emaPoints.join(' ')}
-          />
-        )}
+        <div style={{ flex: 1, position: 'relative' }}>
+          <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+            {/* Horizontal Grid lines & Price Labels */}
+            {priceLevels.map((lvl, idx) => {
+              const y = getY(lvl);
+              return (
+                <g key={idx}>
+                  <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="#f0f0f0" strokeDasharray="3 3" />
+                  <text x={width - padding.right + 6} y={y + 3.5} fill="#888" fontSize="10" fontFamily="Inter, sans-serif">
+                    ₹{lvl.toFixed(2)}
+                  </text>
+                </g>
+              );
+            })}
 
-        {/* Real Candlestick Bars */}
-        {chartData.map((d, idx) => {
-          const x = padding.left + (idx + 0.5) * step;
-          const isUp = d.close >= d.open;
-          const color = isUp ? '#26a69a' : '#ef5350';
-          const yHigh = getY(d.high);
-          const yLow = getY(d.low);
-          const yOpen = getY(d.open);
-          const yClose = getY(d.close);
-          const topBody = Math.min(yOpen, yClose);
-          const bodyHeight = Math.max(2, Math.abs(yClose - yOpen));
-
-          return (
-            <g key={idx} style={{ cursor: 'crosshair' }}>
-              <title>{`${d.date}\nOpen: ₹${d.open.toFixed(2)}\nHigh: ₹${d.high.toFixed(2)}\nLow: ₹${d.low.toFixed(2)}\nClose: ₹${d.close.toFixed(2)}\nVol: ${d.volume.toLocaleString()}`}</title>
-              {/* Vertical Wick from High to Low */}
-              <line x1={x} y1={yHigh} x2={x} y2={yLow} stroke={color} strokeWidth="1.2" />
-              {/* Solid Candle Body */}
-              <rect
-                x={x - barWidth / 2}
-                y={topBody}
-                width={barWidth}
-                height={bodyHeight}
-                fill={color}
-                rx={1}
+            {/* EMA Line overlay */}
+            {chartIndicator === 'EMA' && emaPoints.length > 1 && (
+              <polyline
+                fill="none"
+                stroke="#ff9800"
+                strokeWidth="1.5"
+                points={emaPoints.join(' ')}
               />
-              {/* Time axis label */}
-              {idx % 5 === 0 && (
-                <text x={x} y={height - 6} fill="#888" fontSize="9" textAnchor="middle" fontFamily="Inter, sans-serif">
-                  {d.date}
-                </text>
-              )}
-            </g>
-          );
-        })}
+            )}
 
-        {/* Current Live Price Dashed Indicator Line */}
-        {last && (
-          <g>
-            <line x1={padding.left} y1={lastY} x2={width - padding.right} y2={lastY} stroke={lastColor} strokeDasharray="3 3" strokeWidth="1.2" />
-            <rect x={width - padding.right + 2} y={lastY - 9} width="62" height="18" fill={lastColor} rx="2" />
-            <text x={width - padding.right + 5} y={lastY + 3.5} fill="#fff" fontSize="10" fontWeight="bold" fontFamily="Inter, sans-serif">
-              ₹{last.close.toFixed(2)}
-            </text>
-          </g>
-        )}
-      </svg>
+            {/* Real Candlestick Bars */}
+            {chartData.map((d, idx) => {
+              const x = padding.left + (idx + 0.5) * step;
+              const isUp = d.close >= d.open;
+              const color = isUp ? '#26a69a' : '#ef5350';
+              const yHigh = getY(d.high);
+              const yLow = getY(d.low);
+              const yOpen = getY(d.open);
+              const yClose = getY(d.close);
+              const topBody = Math.min(yOpen, yClose);
+              const bodyHeight = Math.max(2, Math.abs(yClose - yOpen));
+              const isHovered = hoveredCandle === d;
+
+              return (
+                <g 
+                  key={idx} 
+                  style={{ cursor: 'crosshair' }}
+                  onMouseEnter={() => setHoveredCandle(d)}
+                  onMouseLeave={() => setHoveredCandle(null)}
+                >
+                  {/* Crosshair vertical line on hover */}
+                  {isHovered && (
+                    <line x1={x} y1={padding.top} x2={x} y2={height - padding.bottom} stroke="#bbb" strokeDasharray="2 2" strokeWidth="1" pointerEvents="none" />
+                  )}
+                  {/* Vertical Wick from High to Low */}
+                  <line x1={x} y1={yHigh} x2={x} y2={yLow} stroke={color} strokeWidth={isHovered ? 2 : 1.2} />
+                  {/* Solid Candle Body */}
+                  <rect
+                    x={x - (isHovered ? barWidth + 1 : barWidth) / 2}
+                    y={topBody}
+                    width={isHovered ? barWidth + 1 : barWidth}
+                    height={bodyHeight}
+                    fill={color}
+                    rx={1}
+                  />
+                  {/* Time axis label */}
+                  {idx % 5 === 0 && (
+                    <text x={x} y={height - 6} fill="#888" fontSize="9" textAnchor="middle" fontFamily="Inter, sans-serif">
+                      {d.date}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+
+            {/* Current Live Price Dashed Indicator Line */}
+            {last && (
+              <g>
+                <line x1={padding.left} y1={lastY} x2={width - padding.right} y2={lastY} stroke={lastColor} strokeDasharray="3 3" strokeWidth="1.2" />
+                <rect x={width - padding.right + 2} y={lastY - 9} width="62" height="18" fill={lastColor} rx="2" />
+                <text x={width - padding.right + 5} y={lastY + 3.5} fill="#fff" fontSize="10" fontWeight="bold" fontFamily="Inter, sans-serif">
+                  ₹{last.close.toFixed(2)}
+                </text>
+              </g>
+            )}
+          </svg>
+        </div>
+      </div>
     );
   };
 
@@ -543,10 +577,10 @@ export default function Kite() {
             <span style={{ fontSize: '18px', fontWeight: '800', color: '#ff5722', letterSpacing: '0.5px' }}>kite</span>
           </Link>
 
-          <div style={{ display: 'flex', gap: '15px', fontSize: '12px', borderLeft: '1px solid #eee', paddingLeft: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', fontSize: '12px', borderLeft: '1px solid #eee', paddingLeft: '20px' }}>
             <div style={{ color: '#555' }}>
               NIFTY 50 <span className={flashStates.NIFTY50 === 'up' ? 'flash-up text-up' : flashStates.NIFTY50 === 'down' ? 'flash-down text-down' : 'text-up'} style={{ fontWeight: '600', marginLeft: '3px' }}>
-                {(stockPrices.NIFTY50 || 25248.50).toFixed(2)}
+                {(stockPrices.NIFTY50 || 25299.35).toFixed(2)}
               </span>
               <span className={getStockPercentChange('NIFTY50').startsWith('+') ? 'text-up' : 'text-down'} style={{ marginLeft: '4px', fontSize: '10px' }}>
                 ({getStockPercentChange('NIFTY50')})
@@ -554,11 +588,34 @@ export default function Kite() {
             </div>
             <div style={{ color: '#555' }}>
               SENSEX <span className={flashStates.SENSEX === 'up' ? 'flash-up text-up' : flashStates.SENSEX === 'down' ? 'flash-down text-down' : 'text-up'} style={{ fontWeight: '600', marginLeft: '3px' }}>
-                {(stockPrices.SENSEX || 81960.00).toFixed(2)}
+                {(stockPrices.SENSEX || 81911.01).toFixed(2)}
               </span>
               <span className={getStockPercentChange('SENSEX').startsWith('+') ? 'text-up' : 'text-down'} style={{ marginLeft: '4px', fontSize: '10px' }}>
                 ({getStockPercentChange('SENSEX')})
               </span>
+            </div>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              background: liveMarketConnected ? '#e8f5e9' : '#fff3e0',
+              color: liveMarketConnected ? '#2e7d32' : '#e65100',
+              padding: '2px 8px',
+              borderRadius: '12px',
+              fontSize: '10px',
+              fontWeight: '700',
+              letterSpacing: '0.4px',
+              border: `1px solid ${liveMarketConnected ? '#c8e6c9' : '#ffe0b2'}`
+            }}>
+              <span style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: liveMarketConnected ? '#4caf50' : '#ff9800',
+                display: 'inline-block',
+                boxShadow: `0 0 5px ${liveMarketConnected ? '#4caf50' : '#ff9800'}`
+              }}></span>
+              {liveMarketConnected ? 'LIVE FEED (NSE/BSE)' : 'CONNECTING FEED...'}
             </div>
           </div>
         </div>
@@ -702,37 +759,46 @@ export default function Kite() {
                       <span style={{ fontSize: '9px', color: '#9b9b9b', marginLeft: '6px', background: '#f5f5f5', padding: '1px 3px', borderRadius: '2px' }}>NSE</span>
                     </div>
                     
-                    {/* Action buttons shown on hover dynamically using React state */}
-                    {hoveredStock === sym ? (
-                      <div className="watchlist-actions" style={{ display: 'flex', position: 'absolute', right: '15px', gap: '4px', zIndex: 10 }}>
-                        <button 
-                          className="watchlist-action-btn buy" 
-                          onClick={(e) => { e.stopPropagation(); openOrderModal(sym, 'BUY'); }}
-                        >B</button>
-                        <button 
-                          className="watchlist-action-btn sell" 
-                          onClick={(e) => { e.stopPropagation(); openOrderModal(sym, 'SELL'); }}
-                        >S</button>
-                        <button 
-                          className="watchlist-action-btn icon" 
-                          onClick={(e) => { 
-                            e.stopPropagation(); 
-                            setWatchlistDepthOpen(watchlistDepthOpen === sym ? null : sym); 
-                          }}
-                          title="Market Depth"
-                        ><BarChart2 size={11} /></button>
-                        <button 
-                          className="watchlist-action-btn icon" 
-                          onClick={(e) => { e.stopPropagation(); setSelectedStock(sym); }}
-                          title="View Chart"
-                        ><TrendingUp size={11} /></button>
-                      </div>
-                    ) : (
-                      <div className={`watchlist-price ${isUp ? 'text-up' : 'text-down'} ${flash === 'up' ? 'flash-up' : flash === 'down' ? 'flash-down' : ''}`} style={{ display: 'flex', gap: '8px', fontSize: '13px', padding: '2px 4px', borderRadius: '2px' }}>
-                        <span style={{ fontWeight: '500' }}>{price.toFixed(2)}</span>
+                    {/* Action buttons shown on hover alongside real-time price */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {hoveredStock === sym && (
+                        <div className="watchlist-actions" style={{ display: 'flex', alignItems: 'center', gap: '4px', animation: 'fadeIn 0.15s ease' }}>
+                          <button 
+                            type="button"
+                            className="watchlist-action-btn buy" 
+                            onClick={(e) => { e.stopPropagation(); openOrderModal(sym, 'BUY'); }}
+                            title="Buy"
+                          >B</button>
+                          <button 
+                            type="button"
+                            className="watchlist-action-btn sell" 
+                            onClick={(e) => { e.stopPropagation(); openOrderModal(sym, 'SELL'); }}
+                            title="Sell"
+                          >S</button>
+                          <button 
+                            type="button"
+                            className="watchlist-action-btn icon" 
+                            onClick={(e) => { 
+                              e.stopPropagation(); 
+                              setWatchlistDepthOpen(watchlistDepthOpen === sym ? null : sym); 
+                            }}
+                            title="Market Depth"
+                          ><BarChart2 size={11} /></button>
+                          <button 
+                            type="button"
+                            className="watchlist-action-btn icon" 
+                            onClick={(e) => { e.stopPropagation(); setSelectedStock(sym); }}
+                            title="View Chart"
+                          ><TrendingUp size={11} /></button>
+                        </div>
+                      )}
+                      
+                      {/* Real-time price and percentage change - NEVER hidden on hover */}
+                      <div className={`watchlist-price ${isUp ? 'text-up' : 'text-down'} ${flash === 'up' ? 'flash-up' : flash === 'down' ? 'flash-down' : ''}`} style={{ display: 'flex', gap: '6px', fontSize: '13px', padding: '2px 4px', borderRadius: '2px', alignItems: 'center', minWidth: '95px', justifyContent: 'flex-end' }}>
+                        <span style={{ fontWeight: '600' }}>{price.toFixed(2)}</span>
                         <span style={{ fontSize: '11px', opacity: 0.85 }}>{change}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
 
                   {/* Inline Market Depth Expanded Block */}
